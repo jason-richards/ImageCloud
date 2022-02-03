@@ -32,7 +32,7 @@ public:
   }
 
 
-  virtual bool Start() { sleep(10); return true; }
+  virtual bool Start() { return true; }
   virtual bool Stop()  { return false; }
   virtual bool Pause() { return false; }
   virtual bool Kill()  { return false; }
