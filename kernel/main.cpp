@@ -22,20 +22,20 @@ signalHandler(
 
 int
 main(
-	int 					argc,
-	const char * 	argv []
+  int           argc,
+  const char *  argv []
 ) {
 
-	if (argc < 2) {
-		std::cerr << "Expected: " << argv[0] << " configuration.yaml" << std::endl;
-		return -1;
-	}
+  if (argc < 2) {
+    std::cerr << "Expected: " << argv[0] << " configuration.yaml" << std::endl;
+    return -1;
+  }
 
   signal(SIGINT, signalHandler);
 
-	KERNEL::ContextPtr context = KERNEL::CreateContext(argv[1]);
-	KERNEL::Start(context, stopper);
+  KERNEL::ContextPtr context = KERNEL::CreateContext(argv[1]);
+  KERNEL::Start(context, stopper);
 
-	return 0;
+  return 0;
 }
 
