@@ -44,20 +44,6 @@ public:
   ) override {
     IPlugIn::AddSideData(data, size);
     Artifacts::ProbeExif EP = Artifacts::ProbeExif(data, size);
-
-    std::string format;
-
-    if (EP.GetCompression(format)) {
-      std::cout << "Compression is: \'" << format << "\'\n";
-    }
-
-    //Artifacts::ProbeMedia MP = Artifacts::ProbeMedia(data, size);
-
-    //std::string format;
-
-    //if (MP.GetFormat(format)) {
-    //  std::cout << "Format is: " << format << std::endl;
-    //}
   }
 };
 
