@@ -66,22 +66,22 @@ class Context {
 
 public:
 
-	static ContextPtr
-	Create (
-		const std::string& configYAML
-	) {
-		return std::make_shared<Context>(configYAML);
-	}
+  static ContextPtr
+  Create (
+    const std::string& configYAML
+  ) {
+    return std::make_shared<Context>(configYAML);
+  }
 
-	Context(const std::string& configYAML) {
+  Context(const std::string& configYAML) {
     AixLog::Log::init<AixLog::SinkCout>(AixLog::Severity::debug);
-		YAML::Node config = YAML::LoadFile(configYAML);
+    YAML::Node config = YAML::LoadFile(configYAML);
     m_StoragePath     = config["storage"].as<std::string>();
-  	m_ZMQSocketString = config["socket"].as<std::string>();
+    m_ZMQSocketString = config["socket"].as<std::string>();
     m_ThreadCount     = config["threads"] ? config["threads"].as<int>() : 2;
     m_TimeoutMs       = config["timeout"] ? config["timeout"].as<int>() : 1000;
-		m_ZMQContext      = zmq_ctx_new();
-		m_ZMQResponder    = zmq_socket(m_ZMQContext, ZMQ_REP);
+    m_ZMQContext      = zmq_ctx_new();
+    m_ZMQResponder    = zmq_socket(m_ZMQContext, ZMQ_REP);
     m_WorkQueue       = CreateWorkQ();
     m_Running         = false;
     m_ZMQEndPoint.resize(2048, 0);
@@ -95,7 +95,7 @@ public:
       LOG(INFO) << "Creating Worker Thread: " << i << std::endl;
       m_WorkerThreads.push_back(NewWorker());
     }
-	}
+  }
 
  ~Context() {
     if (m_Running) {
@@ -107,9 +107,9 @@ public:
         zmq_unbind(m_ZMQResponder, endpoint);
       }
     }
-		zmq_close(m_ZMQResponder);
-		zmq_ctx_destroy(m_ZMQContext);
-	}
+    zmq_close(m_ZMQResponder);
+    zmq_ctx_destroy(m_ZMQContext);
+  }
 
   ThreadPtr
   NewWorker() {
@@ -135,14 +135,14 @@ public:
   }
 
   bool
-	Start(
+  Start(
     StopTokenPtr stopper
   ) {
-		if (zmq_bind(m_ZMQResponder, m_ZMQSocketString.c_str()) ||
+    if (zmq_bind(m_ZMQResponder, m_ZMQSocketString.c_str()) ||
         zmq_setsockopt(m_ZMQResponder, ZMQ_RCVTIMEO, &m_TimeoutMs, sizeof(m_TimeoutMs))
     ) {
-			return false;
-		}
+      return false;
+    }
 
     m_Running = true;
 
@@ -175,12 +175,12 @@ public:
     return true;
   }
 
-	void
-	Status(
-		std::string& statusString
-	) {
-		statusString = m_Running ? "running" : "stopped";
-	}
+  void
+  Status(
+    std::string& statusString
+  ) {
+    statusString = m_Running ? "running" : "stopped";
+  }
 
 private:
 
@@ -208,11 +208,11 @@ private:
   }
 
   std::string   m_StoragePath;
-	std::string   m_ZMQSocketString;
+  std::string   m_ZMQSocketString;
   std::string   m_ZMQEndPoint;
 
-	void * 			  m_ZMQContext;
-	void * 			  m_ZMQResponder;
+  void *         m_ZMQContext;
+  void *         m_ZMQResponder;
 
   bool          m_Running;
 
@@ -227,14 +227,14 @@ private:
 
 /* Create a new Kernel Context Pointer.
  *
- * @param configFile 	- Name of YAML Configuration file.
+ * @param configFile   - Name of YAML Configuration file.
  * @result ContextPtr - Pointer to a new Kernel Context
  */
 ContextPtr
 CreateContext (
-	const std::string&		configYAML
+  const std::string&    configYAML
 ) {
-	return Context::Create(configYAML);
+  return Context::Create(configYAML);
 }
 
 
@@ -243,14 +243,14 @@ CreateContext (
  *
  * @param context - Pointer to Kernel Context
  * @param stopper - Pointer to a StopToken object for asynchronous control.
- * @result bool 	- True if successfully started Kernel.
+ * @result bool   - True if successfully started Kernel.
  */
 bool
 Start (
-	ContextPtr	context,
+  ContextPtr  context,
   StopTokenPtr stopper
 ) {
-	return context->Start(stopper);
+  return context->Start(stopper);
 }
 
 
@@ -262,10 +262,10 @@ Start (
  */
 void
 Status (
-	ContextPtr 		context,
-	std::string& 	statusString
+  ContextPtr     context,
+  std::string&   statusString
 ) {
-	return context->Status(statusString);
+  return context->Status(statusString);
 }
 
 
