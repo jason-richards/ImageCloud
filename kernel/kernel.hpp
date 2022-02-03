@@ -45,12 +45,12 @@ using ContextPtr = std::shared_ptr<Context>;
 
 /* Create a new Kernel Context Pointer.
  *
- * @param configYAML 	- Name of YAML Configuration file.
+ * @param configYAML  - Name of YAML Configuration file.
  * @result ContextPtr - Pointer to a new Kernel Context
  */
 ContextPtr
 CreateContext (
-	const std::string& configYAML
+  const std::string& configYAML
 );
 
 
@@ -58,11 +58,11 @@ CreateContext (
 /* Start the Kernel.
  * @param context - Pointer to Kernel Context
  * @param stopper - Pointer to a StopToken object for asynchronous control.
- * @result bool 	- True if successfully started Kernel.
+ * @result bool   - True if successfully started Kernel.
  */
 bool
 Start (
-	ContextPtr context,
+  ContextPtr context,
   StopTokenPtr stopper
 );
 
@@ -74,8 +74,8 @@ Start (
  */
 void
 Status (
-	ContextPtr 		context,
-	std::string& 	statusString
+  ContextPtr     context,
+  std::string&   statusString
 );
 
 
