@@ -1,0 +1,15 @@
+[Unit]
+Description=ImageCloud kernel service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=jrichard
+KillSignal=SIGINT
+ExecStart=/usr/bin/env ./mnt/hgfs/VMShare/Projects/ImageCloud/kernel/kernel /mnt/hgfs/VMShare/Projects/ImageCloud/kernel/test/config.yaml
+
+[Install]
+WantedBy=multi-user.target
