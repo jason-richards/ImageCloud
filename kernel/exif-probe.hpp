@@ -1,82 +1,118 @@
 #pragma once
 
-#include <cstdlib>
-#include <stdexcept>
+#include <memory>
+#include <string>
 
-#include <libexif/exif-ifd.h>
-#include <libexif/exif-data.h>
 
 namespace Artifacts {
 
 
-class ProbeExif {
-public:
+class ExifProbe;
+using ExifProbePtr = std::shared_ptr<ExifProbe>;
 
 
-  ProbeExif(
-    const uint8_t * data,
-    size_t size
-  );
+/* Create a new Exif probe.
+ *
+ * @param uint8_t * - Pointer to image data.
+ * @param size_t - Image size.
+ * @result ExifProbePtr - Exif probe pointer.
+ */
+ExifProbePtr
+CreateExifProbe(
+  const uint8_t *,
+  size_t
+);
 
 
- ~ProbeExif();
+/* Get the compression format of the image.
+ *
+ * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param std::string - Resulting compression format string
+ * @result bool - True if successfully found compression format.
+ */
+bool
+GetCompression(
+  ExifProbePtr,
+  std::string&
+);
 
 
-  bool
-  GetCompression(
-    std::string& value
-  );
+/* Get the width of the image.
+ *
+ * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param std::string - Resulting image width.
+ * @result bool - True if successfully found width.
+ */
+bool
+GetWidth(
+  ExifProbePtr,
+  int&
+);
 
 
-  bool
-  GetWidth(
-    int64_t& width
-  );
+/* Get the height of the image.
+ *
+ * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param std::string - Resulting image height.
+ * @result bool - True if successfully found height.
+ */
+bool
+GetHeight(
+  ExifProbePtr,
+  int&
+);
 
 
-  bool
-  GetHeight(
-    int64_t& height
-  );
+/* Get the timestamp of the image.
+ *
+ * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param int - Resulting image timestamp.
+ * @result bool - True if successfully found timestamp.
+ */
+bool
+GetDateTime(
+  ExifProbePtr,
+  std::string&
+);
 
 
-  bool
-  GetDateTime(
-    std::string& value
-  );
+/* Get the Latitude of the image.
+ *
+ * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param std::string - Resulting image Latitude.
+ * @result bool - True if successfully found Latitude.
+ */
+bool
+GetLatitude(
+  ExifProbePtr,
+  std::string&
+);
 
 
-  bool
-  GetLatitude(
-    std::string& value
-  );
+/* Get the Longitude of the image.
+ *
+ * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param std::string - Resulting image Longitude.
+ * @result bool - True if successfully found Longitude.
+ */
+bool
+GetLongitude(
+  ExifProbePtr,
+  std::string&
+);
 
 
-  bool
-  GetLongitude(
-    std::string& value
-  );
-
-
-  bool
-  GetAltitude(
-    int64_t& altitude
-  );
-
-
-private:
-
-  bool
-  ReadTag(
-    ExifData *d,
-    ExifIfd ifd,
-    ExifTag tag,
-    std::string& value
-  );
-
-  ExifData * m_ED;
-};
-
+/* Get the Altitude of the image.
+ *
+ * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param std::string - Resulting image Altitude.
+ * @result bool - True if successfully found Altitude.
+ */
+bool
+GetAltitude(
+  ExifProbePtr,
+  int&
+);
 
 
 } // namespace Artifacts
