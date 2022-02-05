@@ -74,7 +74,6 @@ public:
   }
 
   Context(const std::string& configYAML) {
-    AixLog::Log::init<AixLog::SinkCout>(AixLog::Severity::debug);
     YAML::Node config = YAML::LoadFile(configYAML);
     m_StoragePath     = config["storage"].as<std::string>();
     m_ZMQSocketString = config["socket"].as<std::string>();
@@ -86,6 +85,7 @@ public:
     m_Running         = false;
     m_ZMQEndPoint.resize(2048, 0);
 
+    AixLog::Log::init<AixLog::SinkCout>(AixLog::Severity::debug);
     LOG(INFO) << "Starting Kernel Process"  << std::endl;
     LOG(INFO) << "Threads: "                << m_ThreadCount      << std::endl;
     LOG(INFO) << "ZMQ Socket: "             << m_ZMQSocketString  << std::endl;
@@ -121,14 +121,14 @@ public:
         stopper->Start();
         while (!stopper->StopRequested()) {
           auto workTuple = GetWork(m_WorkQueue);
-          auto UUID = std::get<0>(workTuple);
+          auto uuid = std::get<0>(workTuple);
           auto work = std::get<1>(workTuple);
-          if (!work) {
-            continue;
+
+          if (work) {
+            LOG(INFO) << "Worker Thread " << threadId << " started work ID: " << uuid << std::endl;
+            work->Start(uuid);
+            LOG(INFO) << "Worker Thread " << threadId << " finished work ID: " << uuid << std::endl;
           }
-          LOG(INFO) << "Worker Thread " << threadId << " started work ID: " << UUID << std::endl;
-          work->Start();
-          LOG(INFO) << "Worker Thread " << threadId << " finished work ID: " << UUID << std::endl;
         }
       }, stp, threadId
     );

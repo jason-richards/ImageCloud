@@ -1,8 +1,8 @@
 TARGET = kernel
-LIBS = $(shell pkg-config --libs yaml-cpp uuid libzmq libzen libmediainfo libexif)
+LIBS = $(shell pkg-config --libs yaml-cpp uuid libzmq libzen libmediainfo libexif openssl opencv4)
 
 CXX = g++
-CXXFLAGS = --std=c++2a -Wall -O3
+CXXFLAGS = --std=c++2a -Wall -O3 $(shell pkg-config --cflags opencv4)
 
 .PHONY: default debug all clean
 
