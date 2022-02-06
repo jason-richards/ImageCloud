@@ -10,13 +10,13 @@
 class PlugInFactory {
 public:
 
-  using PlugInBuilder = std::function<IPlugInPtr(const rapidjson::Document&)>;
+  using PlugInBuilder = std::function<IPlugInPtr(const YAML::Node&, const rapidjson::Document&)>;
 
 
   PlugInFactory() {
     RegisterBuilder(std::string("AddPhoto"), 
-      [](const rapidjson::Document& config)->IPlugInPtr {
-        return std::make_shared<AddPhoto>(config);
+      [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
+        return std::make_shared<AddPhoto>(config, request);
       }
     );
   }
@@ -24,24 +24,25 @@ public:
 
   IPlugInPtr
   GetPlugIn(
+    const YAML::Node& config,
     const std::vector<uint8_t>& request,
     std::string& errors
   ) {
-    rapidjson::Document config;
+    rapidjson::Document doc;
 
-    rapidjson::ParseResult ok = config.Parse(reinterpret_cast<const char*>(request.data()));
+    rapidjson::ParseResult ok = doc.Parse(reinterpret_cast<const char*>(request.data()));
     if (!ok) {
       errors = std::string("ERROR: ");
       errors += GetParseError_En(ok.Code());
       return nullptr;
     }
 
-    if (!config.HasMember("plugin") || !config["plugin"].IsString()) {
+    if (!doc.HasMember("plugin") || !doc["plugin"].IsString()) {
       errors = std::string("ERROR: Missing \"plugin\" directive in request JSON");
       return nullptr;
     }
  
-    std::string name = config["plugin"].GetString();
+    std::string name = doc["plugin"].GetString();
 
     PlugInBuilder builder;
     if (!FindBuilder(name, builder)) {
@@ -50,7 +51,7 @@ public:
       return nullptr;
     }
 
-    IPlugInPtr plugin = builder(config);
+    IPlugInPtr plugin = builder(config, doc);
 
     if (!plugin) {
       errors = std::string("ERROR: Plugin not found: ");
@@ -58,9 +59,9 @@ public:
       return nullptr;
     }
 
-    if (config.HasMember("bytes")) {
-      if (config["bytes"].IsUint64()) {
-        int64_t size = config["bytes"].GetUint64();
+    if (doc.HasMember("bytes")) {
+      if (doc["bytes"].IsUint64()) {
+        int64_t size = doc["bytes"].GetUint64();
         size_t offset = request.size() - size;
         plugin->AddSideData(request.data() + offset, size);
       }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <yaml-cpp/yaml.h>
 #include <rapidjson/document.h>
 #include <vector>
 #include <string>
@@ -9,8 +10,8 @@ class IPlugIn {
 public:
   std::vector<uint8_t> m_SideData;
 
-  IPlugIn(const rapidjson::Document& config) {
-    m_Config.CopyFrom(config, m_Config.GetAllocator());
+  IPlugIn(const YAML::Node& config, const rapidjson::Document& request) : m_Config(config) {
+    m_Request.CopyFrom(request, m_Request.GetAllocator());
   }
 
   virtual void GetName(std::string& pluginName)       const = 0;
@@ -24,8 +25,9 @@ public:
 
   virtual void AddSideData(const uint8_t * data, size_t size) { m_SideData.assign(data, data+size); }
 
-private:
-  rapidjson::Document m_Config;
+protected:
+  const YAML::Node& m_Config;
+  rapidjson::Document m_Request;
 };
 
 using IPlugInPtr = std::shared_ptr<IPlugIn>;

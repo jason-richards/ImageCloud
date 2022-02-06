@@ -74,11 +74,11 @@ public:
   }
 
   Context(const std::string& configYAML) {
-    YAML::Node config = YAML::LoadFile(configYAML);
-    m_StoragePath     = config["storage"].as<std::string>();
-    m_ZMQSocketString = config["socket"].as<std::string>();
-    m_ThreadCount     = config["threads"] ? config["threads"].as<int>() : 2;
-    m_TimeoutMs       = config["timeout"] ? config["timeout"].as<int>() : 1000;
+    m_Config          = YAML::LoadFile(configYAML);
+    m_StoragePath     = m_Config["storage"].as<std::string>();
+    m_ZMQSocketString = m_Config["socket"].as<std::string>();
+    m_ThreadCount     = m_Config["threads"] ? m_Config["threads"].as<int>() : 2;
+    m_TimeoutMs       = m_Config["timeout"] ? m_Config["timeout"].as<int>() : 1000;
     m_ZMQContext      = zmq_ctx_new();
     m_ZMQResponder    = zmq_socket(m_ZMQContext, ZMQ_REP);
     m_WorkQueue       = CreateWorkQ();
@@ -152,7 +152,7 @@ public:
 
       if (Receive<std::vector<uint8_t>>(request)) {
         std::string errors;
-        IPlugInPtr plugin = m_PlugIns.GetPlugIn(request, errors);
+        IPlugInPtr plugin = m_PlugIns.GetPlugIn(m_Config, request, errors);
         if (plugin) {
           std::string uuid = AddWork(m_WorkQueue, plugin);
           zmq_send(m_ZMQResponder, uuid.data(), uuid.size(), ZMQ_DONTWAIT);
@@ -206,13 +206,15 @@ private:
 
     return true;
   }
-
+ 
+  YAML::Node    m_Config;
+ 
   std::string   m_StoragePath;
   std::string   m_ZMQSocketString;
   std::string   m_ZMQEndPoint;
 
-  void *         m_ZMQContext;
-  void *         m_ZMQResponder;
+  void *        m_ZMQContext;
+  void *        m_ZMQResponder;
 
   bool          m_Running;
 

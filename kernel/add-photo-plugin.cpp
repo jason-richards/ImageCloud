@@ -5,9 +5,13 @@
 #include "media-probe.hpp"
 #include "exif-probe.hpp"
 #include "sha256-probe.hpp"
+#include "face-probe.hpp"
 
 
-AddPhoto::AddPhoto(const rapidjson::Document& config) : IPlugIn(config) {}
+AddPhoto::AddPhoto(
+  const YAML::Node& config,
+  const rapidjson::Document& request
+) : IPlugIn(config, request) {};
 
 
 void
@@ -70,7 +74,12 @@ AddPhoto::Start(
     std::cout << "Signature: " << signature << "\n";
   }
 
-
+  auto& FP = Artifacts::GetFaceProbe(m_Config["face_cascade"].as<std::string>(), m_SideData);
+  std::vector<Artifacts::FaceRectangleT> faces;
+  GetFaceRectangles(FP, faces);
+  for(auto face : faces) {
+    std::cout << face.x << ":" << face.y << ", width: " << face.width << ", height: " << face.height << std::endl;
+  }
   return true;
 }
 

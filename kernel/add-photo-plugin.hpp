@@ -6,7 +6,10 @@
 class AddPhoto : public IPlugIn {
 public:
 
-  AddPhoto(const rapidjson::Document& config);
+  AddPhoto(
+    const YAML::Node& config,
+    const rapidjson::Document& request
+  );
 
 
   void
