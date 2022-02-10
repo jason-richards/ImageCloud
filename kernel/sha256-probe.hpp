@@ -4,14 +4,14 @@
 
 
 namespace Artifacts {
+namespace SHA256 {
+
+class Probe;
+using ProbePtr = std::shared_ptr<Probe>;
 
 
-class SHA256Probe;
-using SHA256ProbePtr = std::shared_ptr<SHA256Probe>;
-
-
-SHA256ProbePtr
-CreateSHA256Probe(
+ProbePtr
+CreateProbe(
   const uint8_t *,
   size_t
 );
@@ -19,17 +19,18 @@ CreateSHA256Probe(
 
 bool
 GetSignature(
-  SHA256ProbePtr,
+  ProbePtr,
   std::string&
 );
 
 
 bool
 GetSignature128(
-  SHA256ProbePtr,
+  ProbePtr,
   std::string&
 );
 
 
+} // namespace SHA256
 } // namespace Artifacts
 

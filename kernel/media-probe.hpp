@@ -1,34 +1,29 @@
 #pragma once
 
-#define _UNICODE
-#include <ZenLib/Ztring.h>
-#include <MediaInfo/MediaInfo.h>
-#include <MediaInfo/MediaInfo_Events.h>
-
-#define DEFAULT_BLOCK_SIZE 7*188
+#include <memory>
 
 namespace Artifacts {
+namespace Media {
+
+class Probe;
+using ProbePtr = std::shared_ptr<Probe>;
 
 
-class ProbeMedia {
-public:
-
-  ProbeMedia(
-    const uint8_t * data,
-    size_t size
-  );
+ProbePtr
+CreateProbe(
+  const uint8_t * data,
+  size_t size
+);
 
 
-  bool
-  GetFormat(
-    std::string& value
-  );
+bool
+GetFormat(
+  ProbePtr,
+  std::string&
+);
 
-private:
 
-    MediaInfoLib::MediaInfo m_MI;
 
-};
-
+} // namespace Media
 } // namespace Artifacts
 

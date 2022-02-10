@@ -4,13 +4,14 @@
 #include <openssl/sha.h>
 
 namespace Artifacts {
+namespace SHA256 {
 
-class SHA256Probe {
+class Probe {
   std::vector<uint8_t> m_Signature;
 public: 
 
 
-  SHA256Probe(
+  Probe(
     const uint8_t * data,
     size_t size
   ) {
@@ -41,18 +42,18 @@ public:
 };
 
 
-SHA256ProbePtr
-CreateSHA256Probe(
+ProbePtr
+CreateProbe(
   const uint8_t * data,
   size_t size
 ) {
-  return std::make_shared<SHA256Probe>(data, size);
+  return std::make_shared<Probe>(data, size);
 }
 
 
 bool
 GetSignature(
-  SHA256ProbePtr probe,
+  ProbePtr probe,
   std::string& value
 ) {
   return probe->GetSignature(value);
@@ -61,7 +62,7 @@ GetSignature(
 
 bool
 GetSignature128(
-  SHA256ProbePtr probe,
+  ProbePtr probe,
   std::string& value
 ) {
   bool result = probe->GetSignature(value);
@@ -71,5 +72,6 @@ GetSignature128(
   return result;
 }
 
+} // namespace SHA256
 } // namespace Artifacts
 

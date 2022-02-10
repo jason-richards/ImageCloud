@@ -3,6 +3,7 @@
 #include <zmq.h>
 #include <mutex>
 #include <thread>
+#include <filesystem>
 
 #include "kernel.hpp"
 #include "plugin-factory.hpp"
@@ -86,10 +87,23 @@ public:
     m_ZMQEndPoint.resize(2048, 0);
 
     AixLog::Log::init<AixLog::SinkCout>(AixLog::Severity::debug);
+    std::string storage_path = m_Config["storage"].as<std::string>();
     LOG(INFO) << "Starting Kernel Process"  << std::endl;
     LOG(INFO) << "Threads: "                << m_ThreadCount      << std::endl;
     LOG(INFO) << "ZMQ Socket: "             << m_ZMQSocketString  << std::endl;
     LOG(INFO) << "Timeout (ms): "           << m_TimeoutMs        << std::endl;
+    LOG(INFO) << "Storage Path: "           << storage_path       << std::endl;
+    if (!std::filesystem::exists(storage_path)) {
+      throw std::runtime_error("Invalid storage location: " + storage_path);
+    }
+
+    std::string photo_path = storage_path + "/Photos";
+    LOG(INFO) << "Photo Path: "             << photo_path         << std::endl;
+    if (!std::filesystem::exists(photo_path)) {
+      if (!std::filesystem::create_directory(photo_path)) {
+        throw std::runtime_error("Unable to create Photo storage: " + photo_path);
+      }
+    }
 
     for (int i = 0; i < m_ThreadCount; i++) {
       LOG(INFO) << "Creating Worker Thread: " << i << std::endl;

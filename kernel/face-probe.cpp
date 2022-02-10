@@ -1,5 +1,9 @@
 #include "face-probe.hpp"
 
+#pragma GCC diagnostic push
+
+#pragma GCC diagnostic ignored "-Wdeprecated-enum-enum-conversion"
+
 #include <opencv2/objdetect.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
@@ -7,31 +11,31 @@
 #include <opencv2/highgui/highgui_c.h>
 #include <opencv2/imgcodecs/legacy/constants_c.h>
 
-#include <iostream>
+#pragma GCC diagnostic pop
 
 namespace Artifacts {
+namespace Face {
 
-
-class FaceProbe {
+class Probe {
 public:
-  static std::unique_ptr<FaceProbe> m_Instance;
+  static std::unique_ptr<Probe> m_Instance;
 
   cv::FileStorage m_FS;
   std::vector<cv::Rect> m_Faces;
 
-  static FaceProbe&
+  static Probe&
   getInstance(
     const std::string& cascadePath
   ) {
     if (m_Instance == nullptr) {
-      m_Instance.reset(new FaceProbe(cascadePath));
+      m_Instance.reset(new Probe(cascadePath));
     }
 
     return *m_Instance;
   }
   
 
-  FaceProbe(
+  Probe(
     const std::string& cascadePath
   ) {
     m_FS = cv::FileStorage(cascadePath, cv::FileStorage::READ);
@@ -71,7 +75,7 @@ public:
 
 };
 
-std::unique_ptr<FaceProbe> FaceProbe::m_Instance = nullptr;
+std::unique_ptr<Probe> Probe::m_Instance = nullptr;
 
 
 /* Create a new Face probe.
@@ -79,14 +83,14 @@ std::unique_ptr<FaceProbe> FaceProbe::m_Instance = nullptr;
  * @param std::string - Face cascade path.
  * @param uint8_t * - Pointer to image data.
  * @param size_t - Image size.
- * @result FaceProbePtr - Face probe pointer.
+ * @result ProbePtr - Face probe pointer.
  */
-FaceProbe&
-GetFaceProbe(
+Probe&
+GetProbe(
   const std::string& cascadePath,
   const std::vector<uint8_t>& image
 ) {
-  FaceProbe& FP = FaceProbe::getInstance(cascadePath);
+  Probe& FP = Probe::getInstance(cascadePath);
   FP.Decode(image);
   return FP;
 }
@@ -94,18 +98,18 @@ GetFaceProbe(
 
 /* Obtain a vector of all the faces found in the image.
  *
- * @param FaceProbePtr - Face probe pointer.
+ * @param ProbePtr - Face probe pointer.
  * @param std::vector<FaceRectangleT> - Vector of face rectangles
  * @result bool - True if faces were found.
  */
 void
 GetFaceRectangles(
-  FaceProbe& FP,
+  Probe& FP,
   std::vector<FaceRectangleT>& faces
 ) {
   FP.GetFaceRectangles(faces);
 }
 
-
+} // namespace Face
 } // namespace Artifacts
 

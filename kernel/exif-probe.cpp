@@ -8,12 +8,12 @@
 
 
 namespace Artifacts {
+namespace Exif {
 
-
-class ExifProbe {
+class Probe {
 public:
 
-  ExifProbe(
+  Probe(
     const uint8_t * data,
     size_t size
   ) {
@@ -29,7 +29,7 @@ public:
   }
 
 
-  ~ExifProbe() {
+  ~Probe() {
     if (m_ED) {
       exif_data_unref(m_ED);
     }
@@ -153,26 +153,26 @@ private:
  *
  * @param uint8_t * - Pointer to image data.
  * @param size_t - Image size.
- * @result ExifProbePtr - Exif probe pointer.
+ * @result ProbePtr - Exif probe pointer.
  */
-ExifProbePtr
-CreateExifProbe(
+ProbePtr
+CreateProbe(
   const uint8_t * data,
   size_t size
 ) {
-  return std::make_shared<ExifProbe>(data, size);
+  return std::make_shared<Probe>(data, size);
 }
 
 
 /* Get the compression format of the image.
  *
- * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param ProbePtr - Pointer to the Exif probe object.
  * @param std::string - Resulting compression format string
  * @result bool - True if successfully found compression format.
  */
 bool
 GetCompression(
-  ExifProbePtr EP,
+  ProbePtr EP,
   std::string& value
 ) {
   return EP->GetCompression(value);
@@ -181,13 +181,13 @@ GetCompression(
 
 /* Get the width of the image.
  *
- * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param ProbePtr - Pointer to the Exif probe object.
  * @param int - Resulting image width.
  * @result bool - True if successfully found width.
  */
 bool
 GetWidth(
-  ExifProbePtr EP,
+  ProbePtr EP,
   int& value
 ) {
   std::string s;
@@ -200,7 +200,7 @@ GetWidth(
 
 bool
 GetWidth(
-  ExifProbePtr EP,
+  ProbePtr EP,
   std::string& value
 ) {
   return EP->GetWidth(value);
@@ -209,13 +209,13 @@ GetWidth(
 
 /* Get the height of the image.
  *
- * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param ProbePtr - Pointer to the Exif probe object.
  * @param int - Resulting image height.
  * @result bool - True if successfully found height.
  */
 bool
 GetHeight(
-  ExifProbePtr EP,
+  ProbePtr EP,
   int& value
 ) {
   std::string s;
@@ -229,7 +229,7 @@ GetHeight(
 
 bool
 GetHeight(
-  ExifProbePtr EP,
+  ProbePtr EP,
   std::string& value
 ) {
   return EP->GetHeight(value);
@@ -238,13 +238,13 @@ GetHeight(
 
 /* Get the timestamp of the image.
  *
- * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param ProbePtr - Pointer to the Exif probe object.
  * @param int - Resulting image timestamp.
  * @result bool - True if successfully found timestamp.
  */
 bool
 GetDateTime(
-  ExifProbePtr EP,
+  ProbePtr EP,
   std::string& value
 ) {
   return EP->GetDateTime(value);
@@ -253,13 +253,13 @@ GetDateTime(
 
 /* Get the Latitude of the image.
  *
- * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param ProbePtr - Pointer to the Exif probe object.
  * @param std::string - Resulting image Latitude.
  * @result bool - True if successfully found Latitude.
  */
 bool
 GetLatitude(
-  ExifProbePtr EP,
+  ProbePtr EP,
   std::string& value
 ) {
   return EP->GetLatitude(value);
@@ -268,13 +268,13 @@ GetLatitude(
 
 /* Get the Longitude of the image.
  *
- * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param ProbePtr - Pointer to the Exif probe object.
  * @param std::string - Resulting image Longitude.
  * @result bool - True if successfully found Longitude.
  */
 bool
 GetLongitude(
-  ExifProbePtr EP,
+  ProbePtr EP,
   std::string& value
 ) {
   return EP->GetLongitude(value);
@@ -283,18 +283,19 @@ GetLongitude(
 
 /* Get the Altitude of the image.
  *
- * @param ExifProbePtr - Pointer to the Exif probe object.
+ * @param ProbePtr - Pointer to the Exif probe object.
  * @param std::string - Resulting image Altitude.
  * @result bool - True if successfully found Altitude.
  */
 bool
 GetAltitude(
-  ExifProbePtr EP,
+  ProbePtr EP,
   int& value
 ) {
   return EP->GetAltitude(value);
 }
 
 
+} // namespace Exif
 } // namespace Artifacts
 

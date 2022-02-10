@@ -5,9 +5,9 @@
 #include <vector>
 
 namespace Artifacts {
+namespace Face {
 
-
-class FaceProbe;
+class Probe;
 
 
 /**************
@@ -29,10 +29,10 @@ FaceRectangle {
  *
  * @param std::string - Face cascade path.
  * @param std::vector<uint8_t> - Image.
- * @result FaceProbe& - Face probe reference.
+ * @result Probe& - Face probe reference.
  */
-FaceProbe&
-GetFaceProbe(
+Probe&
+GetProbe(
   const std::string&,
   const std::vector<uint8_t>&
 );
@@ -40,15 +40,16 @@ GetFaceProbe(
 
 /* Obtain a vector of all the faces found in the image.
  *
- * @param const FaceProbe - Face probe reference.
+ * @param const Probe - Face probe reference.
  * @param std::vector<FaceRectangleT> - Vector of face rectangles
  */
 void
 GetFaceRectangles(
-  FaceProbe&,
+  Probe&,
   std::vector<FaceRectangleT>&
 );
 
 
+} // namespace Face
 } // namespace Artifacts
 
