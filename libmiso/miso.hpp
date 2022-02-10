@@ -49,10 +49,8 @@ FaceRectangle {
 
  */
 
-
 class Miso;
 using MisoPtr = std::shared_ptr<Miso>;
-
 
 MisoPtr CreateContext   ();
 MisoPtr CreateContext   (const std::string& jsonPath);

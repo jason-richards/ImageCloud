@@ -235,16 +235,45 @@ public:
     longitude = m_Doc["longitude"].GetString();
   }
 
+
   void
   SetFaceRectangles(
-    __attribute__((unused))const std::vector<FaceRectangleT>& faces
-  ) {}
+    const std::vector<FaceRectangleT>& faces
+  ) {
+    rapidjson::Document::AllocatorType& allocator = m_Doc.GetAllocator();
+    rapidjson::Value array(rapidjson::kArrayType);
+    for (auto face : faces) {
+      rapidjson::Value v;
+      v.SetObject();
+      v.AddMember("x", face.x, allocator);
+      v.AddMember("y", face.y, allocator);
+      v.AddMember("width", face.width, allocator);
+      v.AddMember("height", face.height, allocator);
+      array.PushBack(v, allocator);
+    }
+
+    m_Doc.AddMember("faces", array, allocator);
+  }
 
 
   void
   GetFaceRectangles(
-    __attribute__((unused))std::vector<FaceRectangleT>& faces
-  ) {}
+    std::vector<FaceRectangleT>& faces
+  ) {
+    if (m_Doc.HasMember("faces") && m_Doc["faces"].IsArray()) {
+      const auto& f = m_Doc["faces"];
+      for (auto iter = f.Begin(); iter != f.End(); iter++) {
+        faces.push_back(
+          FaceRectangleT{
+            .x=(*iter)["x"].GetInt(),
+            .y=(*iter)["y"].GetInt(),
+            .width=(*iter)["width"].GetInt(),
+            .height=(*iter)["height"].GetInt(),
+          }
+        );
+      }
+    }
+  }
 
 
   void

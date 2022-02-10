@@ -64,11 +64,11 @@ public:
 
   void 
   GetFaceRectangles(
-    std::vector<FaceRectangleT>& faces
+    std::vector<Miso::FaceRectangleT>& faces
   ) {
     std::for_each(m_Faces.begin(), m_Faces.end(),
       [&faces](cv::Rect face) {
-        faces.push_back(FaceRectangleT{.x=face.x, .y=face.y, .width=face.width, .height=face.height});
+        faces.push_back(Miso::FaceRectangleT{.x=face.x, .y=face.y, .width=face.width, .height=face.height});
       }
     );
   }
@@ -105,7 +105,7 @@ GetProbe(
 void
 GetFaceRectangles(
   Probe& FP,
-  std::vector<FaceRectangleT>& faces
+  std::vector<Miso::FaceRectangleT>& faces
 ) {
   FP.GetFaceRectangles(faces);
 }

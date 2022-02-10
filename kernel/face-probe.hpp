@@ -3,26 +3,12 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "miso.hpp"
 
 namespace Artifacts {
 namespace Face {
 
 class Probe;
-
-
-/**************
- *  0-------X
- *  |
- *  |  []
- *  Y
- **************/
-typedef struct
-FaceRectangle {
-  int x;
-  int y;
-  int width;
-  int height;
-} FaceRectangleT;
 
 
 /* Create a new Face probe.
@@ -46,7 +32,7 @@ GetProbe(
 void
 GetFaceRectangles(
   Probe&,
-  std::vector<FaceRectangleT>&
+  std::vector<Miso::FaceRectangleT>&
 );
 
 

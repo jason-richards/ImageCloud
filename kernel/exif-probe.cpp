@@ -138,6 +138,7 @@ private:
       value.resize(1024, 0);
       exif_entry_get_value(entry, value.data(), value.size()-1);
       if (value.at(0)) {
+        value.erase(value.find('\0'));
         return true;
       }
     }

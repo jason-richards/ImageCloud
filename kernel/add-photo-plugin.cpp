@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <fstream>
 #include <ctime>
+#include <iomanip>
 
 #include "add-photo-plugin.hpp"
 
@@ -15,8 +16,7 @@
 AddPhoto::AddPhoto(
   const YAML::Node& config,
   const rapidjson::Document& request
-) : IPlugIn(config, request) {
-};
+) : IPlugIn(config, request) {};
 
 
 void
@@ -34,7 +34,31 @@ AddPhoto::GetStatus(
   statusMessage = std::string("OK");
 }
 
-     
+
+std::string
+PrepDirectory(
+  const std::string& base_path,
+  const std::string& timestamp
+) {
+  struct tm timeinfo;
+  if (!strptime(timestamp.c_str(), "%Y:%m:%d %H:%M:%S", &timeinfo)) {
+    throw std::runtime_error("Invalid Date/Time format.");
+  }
+
+  std::stringstream ss;
+  ss << base_path << "/Photos/" << std::put_time(&timeinfo, "%Y-%m-%d");
+
+  std::string new_path = ss.str();
+  if (!std::filesystem::exists(new_path)) {
+    if (!std::filesystem::create_directory(new_path)) {
+      throw std::runtime_error("Unable to create Photo storage: " + new_path);
+    }
+  }
+
+  return new_path;
+}
+
+
 bool
 AddPhoto::Start(
   const std::string& uuid
@@ -54,25 +78,33 @@ AddPhoto::Start(
   Artifacts::SHA256::GetSignature128(SP, signature);
 
   auto& FP = Artifacts::Face::GetProbe(m_Config["face_cascade"].as<std::string>(), m_SideData);
-  std::vector<Artifacts::Face::FaceRectangleT> faces;
+  std::vector<Miso::FaceRectangleT> faces;
   GetFaceRectangles(FP, faces);
-  for(auto face : faces) {
-    std::cout << face.x << ":" << face.y << ", width: " << face.width << ", height: " << face.height << std::endl;
-  }
 
-  auto two = Miso::CreateContext();
-  Miso::SetUUID(two,   uuid);
-  Miso::SetSignature(two, signature);
-  Miso::SetTimeStamp(two, timestamp);
-  Miso::SetCompression(two,  compression);
-  Miso::SetLongitude(two, longitude);
-  Miso::SetLatitude(two, latitude);
-  Miso::SetWidth(two,  width);
-  Miso::SetHeight(two, height);
+  Miso::MisoPtr MP = Miso::CreateContext();
+  Miso::SetUUID(MP, uuid);
+  Miso::SetSignature(MP, signature);
+  Miso::SetTimeStamp(MP, timestamp);
+  Miso::SetCompression(MP, compression);
+  Miso::SetLongitude(MP, longitude);
+  Miso::SetLatitude(MP, latitude);
+  Miso::SetWidth(MP, width);
+  Miso::SetHeight(MP, height);
+  Miso::SetFaceRectangles(MP, faces);
 
-  std::ofstream out("cow.json");
-  Miso::Write(two, out);
+  auto new_path = PrepDirectory(m_Config["storage"].as<std::string>(), timestamp);
+  auto old_path = std::filesystem::current_path();
+  std::filesystem::current_path(new_path);
 
+  std::ofstream manifest(std::string(uuid+".json"));
+  Miso::Write(MP, manifest);
+  manifest.close();
+
+  std::ofstream image(std::string(uuid+".jpg"));
+  image.write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
+  image.close();
+
+  std::filesystem::current_path(old_path);
   return true;
 }
 
