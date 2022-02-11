@@ -77,7 +77,7 @@ AddPhoto::Start(
   Artifacts::SHA256::ProbePtr SP = Artifacts::SHA256::CreateProbe(m_SideData.data(), m_SideData.size());
   Artifacts::SHA256::GetSignature128(SP, signature);
 
-  auto& FP = Artifacts::Face::GetProbe(m_Config["face_cascade"].as<std::string>(), m_SideData);
+  Artifacts::Face::ProbePtr FP = Artifacts::Face::CreateProbe(m_Config["face_cascade"].as<std::string>(), m_SideData);
   std::vector<Miso::FaceRectangleT> faces;
   GetFaceRectangles(FP, faces);
 

@@ -3,4 +3,4 @@ threads: 8                          # Threads to use for handling incoming reque
 timeout: 1000                       # Number of milliseconds to wait on a blocked incoming socket
 socket: "tcp://*:5555"              # ZMQ Response socket address
 storage: /mnt/hgfs/VMShare/origin   # Origin storage location (Where photos/video/audio files will be stored)
-face_cascade: test/haarcascade_frontalface_default.xml # Facial recognition cascade file
+face_cascade: /usr/share/opencv4/haarcascades/haarcascade_frontalface_alt2.xml # Facial recognition cascade file

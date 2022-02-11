@@ -9,7 +9,7 @@ namespace Artifacts {
 namespace Face {
 
 class Probe;
-
+using ProbePtr = std::shared_ptr<Probe>;
 
 /* Create a new Face probe.
  *
@@ -17,8 +17,8 @@ class Probe;
  * @param std::vector<uint8_t> - Image.
  * @result Probe& - Face probe reference.
  */
-Probe&
-GetProbe(
+ProbePtr
+CreateProbe(
   const std::string&,
   const std::vector<uint8_t>&
 );
@@ -31,7 +31,7 @@ GetProbe(
  */
 void
 GetFaceRectangles(
-  Probe&,
+  ProbePtr,
   std::vector<Miso::FaceRectangleT>&
 );
 

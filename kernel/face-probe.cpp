@@ -18,36 +18,20 @@ namespace Face {
 
 class Probe {
 public:
-  static std::unique_ptr<Probe> m_Instance;
-
-  cv::FileStorage m_FS;
+  static std::unique_ptr<cv::FileStorage> m_FS;
   std::vector<cv::Rect> m_Faces;
 
-  static Probe&
-  getInstance(
-    const std::string& cascadePath
-  ) {
-    if (m_Instance == nullptr) {
-      m_Instance.reset(new Probe(cascadePath));
-    }
-
-    return *m_Instance;
-  }
-  
 
   Probe(
-    const std::string& cascadePath
-  ) {
-    m_FS = cv::FileStorage(cascadePath, cv::FileStorage::READ);
-  }
-
-
-  void
-  Decode(
+    const std::string& cascadePath,
     const std::vector<uint8_t>& image
   ) {
+    if (m_FS == nullptr) {
+      m_FS.reset(new cv::FileStorage(cascadePath, cv::FileStorage::READ));
+    }
+
     cv::CascadeClassifier face_cascade;
-    if (!face_cascade.read(m_FS.getFirstTopLevelNode())) {
+    if (!face_cascade.read(m_FS->getFirstTopLevelNode())) {
       throw std::runtime_error("Error loading cascade.");
     }
 
@@ -57,7 +41,7 @@ public:
     }
 
     cv::equalizeHist(decodedImage, decodedImage);
-    face_cascade.detectMultiScale(decodedImage, m_Faces);
+    face_cascade.detectMultiScale(decodedImage, m_Faces, 1.3, 3);
     decodedImage.release();
   }
 
@@ -75,7 +59,7 @@ public:
 
 };
 
-std::unique_ptr<Probe> Probe::m_Instance = nullptr;
+std::unique_ptr<cv::FileStorage> Probe::m_FS = nullptr;
 
 
 /* Create a new Face probe.
@@ -85,14 +69,12 @@ std::unique_ptr<Probe> Probe::m_Instance = nullptr;
  * @param size_t - Image size.
  * @result ProbePtr - Face probe pointer.
  */
-Probe&
-GetProbe(
+ProbePtr
+CreateProbe(
   const std::string& cascadePath,
   const std::vector<uint8_t>& image
 ) {
-  Probe& FP = Probe::getInstance(cascadePath);
-  FP.Decode(image);
-  return FP;
+  return std::make_shared<Probe>(cascadePath, image);
 }
 
 
@@ -104,10 +86,10 @@ GetProbe(
  */
 void
 GetFaceRectangles(
-  Probe& FP,
+  ProbePtr FP,
   std::vector<Miso::FaceRectangleT>& faces
 ) {
-  FP.GetFaceRectangles(faces);
+  FP->GetFaceRectangles(faces);
 }
 
 } // namespace Face
