@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "add-photo-plugin.hpp"
+#include "identify-plugin.hpp"
 
 class PlugInFactory {
 public:
@@ -17,6 +18,12 @@ public:
     RegisterBuilder(std::string("AddPhoto"), 
       [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
         return std::make_shared<AddPhoto>(config, request);
+      }
+    );
+
+    RegisterBuilder(std::string("Identify"),
+      [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
+        return std::make_shared<Identify>(config, request);
       }
     );
   }
