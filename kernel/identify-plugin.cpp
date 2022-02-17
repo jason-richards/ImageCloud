@@ -65,8 +65,7 @@ bool
 Identify::Start(
   const std::string& uuid
 ) {
-  auto new_path = PrepDirectory(m_Config["storage"].as<std::string>());
-  auto old_path = std::filesystem::current_path();
+  auto path = PrepDirectory(m_Config["storage"].as<std::string>());
 
   cv::Mat decodedImage = cv::imdecode(m_SideData, CV_LOAD_IMAGE_GRAYSCALE);
   if (decodedImage.data == nullptr) {
@@ -83,17 +82,13 @@ Identify::Start(
 
   cv::Ptr<cv::face::FaceRecognizer> model = cv::face::LBPHFaceRecognizer::create();
 
-  std::filesystem::current_path(new_path);
-
   model->train(images, labels);
   model->setLabelInfo(label, m_Name);
-  model->write(labelString+".yaml");
+  model->write(path + "/" + labelString + ".yaml");
 
-  std::ofstream image(std::string(labelString+".jpg"), std::ios::binary);
+  std::ofstream image(std::string(path + "/" + labelString + ".jpg"), std::ios::binary);
   image.write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
   image.close();
-
-  std::filesystem::current_path(old_path);
 
   decodedImage.release();
 

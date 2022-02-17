@@ -92,19 +92,16 @@ AddPhoto::Start(
   Miso::SetHeight(MP, height);
   Miso::SetFaceRectangles(MP, faces);
 
-  auto new_path = PrepDirectory(m_Config["storage"].as<std::string>(), timestamp);
-  auto old_path = std::filesystem::current_path();
-  std::filesystem::current_path(new_path);
+  auto path = PrepDirectory(m_Config["storage"].as<std::string>(), timestamp);
 
-  std::ofstream manifest(std::string(uuid+".json"));
+  std::ofstream manifest(std::string(path + "/" + uuid + ".json"));
   Miso::Write(MP, manifest);
   manifest.close();
 
-  std::ofstream image(std::string(uuid+".jpg"));
+  std::ofstream image(std::string(path + "/" + uuid + ".jpg"));
   image.write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
   image.close();
 
-  std::filesystem::current_path(old_path);
   return true;
 }
 
