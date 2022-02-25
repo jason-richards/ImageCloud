@@ -7,6 +7,7 @@
 
 #include "add-photo-plugin.hpp"
 #include "identify-plugin.hpp"
+#include "search-plugin.hpp"
 
 class PlugInFactory {
 public:
@@ -24,6 +25,12 @@ public:
     RegisterBuilder(std::string("Identify"),
       [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
         return std::make_shared<Identify>(config, request);
+      }
+    );
+
+    RegisterBuilder(std::string("Search"),
+      [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
+        return std::make_shared<Search>(config, request);
       }
     );
   }
