@@ -63,17 +63,15 @@ bool
 AddPhoto::Start(
   const std::string& uuid
 ) {
-  std::string signature, timestamp, compression, longitude, latitude; 
+  std::string signature, timestamp, compression, location;
   int width = 0, height = 0;
 
   Artifacts::Exif::ProbePtr EP = Artifacts::Exif::CreateProbe(m_SideData.data(), m_SideData.size());
   Artifacts::Exif::GetCompression(EP, compression);
   Artifacts::Exif::GetWidth(EP, width);
   Artifacts::Exif::GetHeight(EP, height);
-  Artifacts::Exif::GetLongitude(EP, longitude);
-  Artifacts::Exif::GetLatitude(EP, latitude);
+  Artifacts::Exif::GetLocation(EP, location);
   Artifacts::Exif::GetDateTime(EP, timestamp);
-
   Artifacts::SHA256::ProbePtr SP = Artifacts::SHA256::CreateProbe(m_SideData.data(), m_SideData.size());
   Artifacts::SHA256::GetSignature128(SP, signature);
 
@@ -86,8 +84,7 @@ AddPhoto::Start(
   Miso::SetSignature(MP, signature);
   Miso::SetTimeStamp(MP, timestamp);
   Miso::SetCompression(MP, compression);
-  Miso::SetLongitude(MP, longitude);
-  Miso::SetLatitude(MP, latitude);
+  Miso::SetLocation(MP, location);
   Miso::SetWidth(MP, width);
   Miso::SetHeight(MP, height);
   Miso::SetFaceRectangles(MP, faces);

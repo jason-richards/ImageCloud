@@ -12,6 +12,7 @@ public:
   std::unique_ptr<std::string> m_Day;
   std::unique_ptr<std::string> m_Location;
   std::unique_ptr<std::string> m_Name;
+  float m_RadiusMiles;
 
 
   Search(

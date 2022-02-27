@@ -102,6 +102,19 @@ GetLongitude(
 );
 
 
+/* Get the GPS Coordinates in Decimal Degree format.
+ *
+ * @param ProbePtr - Pointer to the Exif probe object.
+ * @param std::string - Latitude, Longitude in degrees.
+ * @result bool - True if successfully obtained coordinates.
+ */
+bool
+GetLocation(
+  ProbePtr,
+  std::string&
+);
+
+
 /* Get the Altitude of the image.
  *
  * @param ProbePtr - Pointer to the Exif probe object.

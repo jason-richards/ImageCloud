@@ -8,11 +8,12 @@
 #include <rapidjson/istreamwrapper.h>
 #include <fstream>
 
+#define DEFAULT_SEARCH_RADIUS_MILES 100
 
 Search::Search(
   const YAML::Node& config,
   const rapidjson::Document& request
-) : IPlugIn(config, request) {
+) : IPlugIn(config, request), m_RadiusMiles(DEFAULT_SEARCH_RADIUS_MILES) {
   if (request.HasMember("date") && request["date"].IsString()) {
     m_Date.reset(new std::string(request["date"].GetString()));
   }
@@ -48,6 +49,10 @@ Search::Search(
   if (request.HasMember("location") && request["location"].IsString()) {
     m_Location.reset(new std::string(request["location"].GetString()));
   }
+
+  if (request.HasMember("radius") && request["radius"].IsString()) {
+    m_RadiusMiles = std::stof(request["radius"].GetString());
+  }
 }
 
 
@@ -64,6 +69,28 @@ Search::GetStatus(
   std::string& statusMessage
 ) const {
   statusMessage = std::string("OK");
+}
+
+
+float
+GetDistanceKM(
+  float latitude[2],
+  float longitude[2]
+) {
+  constexpr float deglen = 110.25;
+  float x = latitude[0] - latitude[1];
+  float y = (longitude[0] - longitude[1]) * cos(latitude[1]);
+  return deglen * std::sqrt(x*x + y*y);
+}
+
+
+float
+GetDistanceMiles(
+  float latitude[2],
+  float longitude[2]
+) {
+  constexpr float kmToM = 0.62137;
+  return kmToM * GetDistanceKM(latitude, longitude);
 }
 
 
@@ -178,22 +205,38 @@ Search::Start(
         }
 
         if (m_Location) {
-          // TODO
+          if (!img_json.HasMember("location") || !img_json["location"].IsString()) {
+            continue;
+          }
+
+          std::string location = std::string(img_json["location"].GetString());
+
+          float latitude[2] = {0, 0}, longitude[2] = {0, 0};
+          if (std::sscanf(location.c_str(), "%f, %f", &latitude[0], &longitude[0]) != 2) {
+            continue;
+          }
+
+          if (std::sscanf(m_Location->c_str(), "%f, %f", &latitude[1], &longitude[1]) != 2) {
+            continue;
+          }
+
+          float calculatedDistance = GetDistanceMiles(latitude, longitude);
+
+          if (calculatedDistance > m_RadiusMiles) {
+            continue;
+          }
         }
       }
 
       files.push_back(file);
     }
-
-    std::list<std::string> uuids;
-    for (const auto& file : files) {
-      std::filesystem::path path(file.path());
-      uuids.push_back(path.stem());
-    }
-
   }
 
-  // 3. Location Search, if applicable
+  std::list<std::string> uuids;
+  for (const auto& file : files) {
+    std::filesystem::path path(file.path());
+    uuids.push_back(path.stem());
+  }
 
   return false;
 }

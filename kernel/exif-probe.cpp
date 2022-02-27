@@ -1,5 +1,6 @@
 #include "exif-probe.hpp"
 
+#include <cstdio>
 #include <cstdlib>
 #include <stdexcept>
 
@@ -107,6 +108,56 @@ public:
     std::string& value
   ) {
     return ReadTag(m_ED, EXIF_IFD_GPS, static_cast<ExifTag>(EXIF_TAG_GPS_LONGITUDE), value);
+  }
+
+
+  bool
+  ToDegrees(
+    const std::string& DMS,
+    float& DD
+  ) {
+    float degrees = 0, minutes = 0, seconds = 0;
+    if (std::sscanf(DMS.c_str(), "%f, %f, %f", &degrees, &minutes, &seconds) != 3) {
+      return false;
+    }
+
+    DD = degrees + (minutes / 60.0) + (seconds / 3600.0);
+
+    return true;
+  }
+
+
+  bool
+  GetLocation(
+    float& latitude,
+    float& longitude
+  ) {
+    std::string value;
+    if (!GetLatitude(value) || !ToDegrees(value, latitude)) {
+      return false;
+    }
+
+    if (!ReadTag(m_ED, EXIF_IFD_GPS, static_cast<ExifTag>(EXIF_TAG_GPS_LATITUDE_REF), value)) {
+      return false;
+    }
+
+    if (value.compare("N")) {
+      latitude = 0 - latitude;
+    }
+
+    if (!GetLongitude(value) || !ToDegrees(value, longitude)) {
+      return false;
+    }
+
+    if (!ReadTag(m_ED, EXIF_IFD_GPS, static_cast<ExifTag>(EXIF_TAG_GPS_LONGITUDE_REF), value)) {
+      return false;
+    }
+
+    if (value.compare("E")) {
+      longitude = 0 - longitude;
+    }
+
+    return true;
   }
 
 
@@ -279,6 +330,28 @@ GetLongitude(
   std::string& value
 ) {
   return EP->GetLongitude(value);
+}
+
+/* Get the GPS Coordinates in Decimal Degree format.
+ *
+ * @param ProbePtr - Pointer to the Exif probe object.
+ * @param std::string - Latitude, Longitude in degrees.
+ * @result bool - True if successfully obtained coordinates.
+ */
+bool
+GetLocation(
+  ProbePtr EP,
+  std::string& value
+) {
+  float latitude = 0, longitude = 0;
+
+  if (!EP->GetLocation(latitude, longitude)) {
+    return false;
+  }
+
+  value = std::string(std::to_string(latitude) + ", " + std::to_string(longitude));
+
+  return true;
 }
 
 

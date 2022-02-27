@@ -33,8 +33,7 @@ public:
     m_Doc.AddMember("compression",  4, allocator);
     m_Doc.AddMember("width",        5, allocator);
     m_Doc.AddMember("height",       6, allocator);
-    m_Doc.AddMember("latitude",     7, allocator);
-    m_Doc.AddMember("longitude",    8, allocator);
+    m_Doc.AddMember("location",     7, allocator);
   }
 
 
@@ -99,12 +98,8 @@ public:
       throw std::runtime_error("Missing required height.");
     }
 
-    if (!m_Doc.HasMember("latitude") || !m_Doc["latitude"].IsString()) {
-      throw std::runtime_error("Missing required latitude.");
-    }
-
-    if (!m_Doc.HasMember("longitude") || !m_Doc["longitude"].IsString()) {
-      throw std::runtime_error("Missing required longitude.");
+    if (!m_Doc.HasMember("location") || !m_Doc["location"].IsString()) {
+      throw std::runtime_error("Missing required location.");
     }
   }
 
@@ -205,34 +200,18 @@ public:
 
 
   void
-  SetLatitude(
-    const std::string& latitude
+  SetLocation(
+    const std::string& location
   ) {
-    m_Doc["latitude"].SetString(latitude.data(), latitude.size());
+    m_Doc["location"].SetString(location.data(), location.size());
   }
 
 
   void
-  GetLatitude(
-    std::string& latitude
+  GetLocation(
+    std::string& location
   ) {
-    latitude = m_Doc["latitude"].GetString();
-  }
-
-
-  void
-  SetLongitude(
-    const std::string& longitude
-  ) {
-    m_Doc["longitude"].SetString(longitude.data(), longitude.size());
-  }
-
-
-  void
-  GetLongitude(
-    std::string& longitude
-  ) {
-    longitude = m_Doc["longitude"].GetString();
+    location = m_Doc["location"].GetString();
   }
 
 
@@ -420,38 +399,20 @@ GetHeight(
 
 
 void
-SetLatitude(
+SetLocation(
   MisoPtr context,
-  const std::string& latitude
+  const std::string& location
 ) {
-  context->SetLatitude(latitude);
+  context->SetLocation(location);
 }
 
 
 void
-GetLatitude(
+GetLocation(
   MisoPtr context,
-  std::string& latitude
+  std::string& location
 ) {
-  context->GetLatitude(latitude);
-}
-
-
-void
-SetLongitude(
-  MisoPtr context,
-  const std::string& longitude
-) {
-  context->SetLongitude(longitude);
-}
-
-
-void
-GetLongitude(
-  MisoPtr context,
-  std::string& longitude
-) {
-  context->GetLongitude(longitude);
+  context->GetLocation(location);
 }
 
 
