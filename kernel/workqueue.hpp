@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <tuple>
 
 #include "iplugin.hpp"
 
@@ -21,9 +20,8 @@ CreateWorkQ();
 /* Add a task from the Work Queue.
  * @param WorkQueuePtr - Pointer to the work queue.
  * @param IPlugInPtr - Pointer to the task to run. 
- * @result - Unique identifier string generated for the task.
  */
-std::string
+void
 AddWork(
   WorkQueuePtr,
   IPlugInPtr
@@ -32,9 +30,9 @@ AddWork(
 
 /* Get a task from the Work Queue.
  * @param WorkQueuePtr - Pointer to the work queue.
- * @result - A string uuid /pointer to the work tuple returned.
+ * @result - Pointer to the work returned.
  */
-std::tuple<std::string, IPlugInPtr>
+IPlugInPtr
 GetWork(
   WorkQueuePtr
 );

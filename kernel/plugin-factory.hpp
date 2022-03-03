@@ -35,24 +35,33 @@ public:
     );
   }
 
+  void
+  SetError(
+    const std::string& message,
+    std::string& jsonResponse
+  ) {
+    jsonResponse = std::string("{\"status\" : \"ERROR\", \"message\" : \"");
+    jsonResponse += message;
+    jsonResponse += "\"}";
+  }
+
 
   IPlugInPtr
   GetPlugIn(
     const YAML::Node& config,
     const std::vector<uint8_t>& request,
-    std::string& errors
+    std::string& jsonResponse
   ) {
     rapidjson::Document doc;
 
     rapidjson::ParseResult ok = doc.Parse(reinterpret_cast<const char*>(request.data()));
     if (!ok) {
-      errors = std::string("ERROR: ");
-      errors += GetParseError_En(ok.Code());
+      SetError(GetParseError_En(ok.Code()), jsonResponse);
       return nullptr;
     }
 
     if (!doc.HasMember("plugin") || !doc["plugin"].IsString()) {
-      errors = std::string("ERROR: Missing \"plugin\" directive in request JSON");
+      SetError(std::string("Missing \"plugin\" directive in request JSON"), jsonResponse);
       return nullptr;
     }
  
@@ -60,16 +69,14 @@ public:
 
     PlugInBuilder builder;
     if (!FindBuilder(name, builder)) {
-      errors = std::string("ERROR: Plugin not found: ");
-      errors += name;
+      SetError(std::string("Plugin not found."), jsonResponse);
       return nullptr;
     }
 
     IPlugInPtr plugin = builder(config, doc);
 
     if (!plugin) {
-      errors = std::string("ERROR: Plugin not found: ");
-      errors += name;
+      SetError(std::string("Plugin not found."), jsonResponse);
       return nullptr;
     }
 
@@ -80,6 +87,8 @@ public:
         plugin->AddSideData(request.data() + offset, size);
       }
     }
+
+    plugin->Initialize(jsonResponse);
 
     return plugin;
   }

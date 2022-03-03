@@ -134,13 +134,11 @@ public:
       [&](StopTokenPtr stopper, int threadId) {
         stopper->Start();
         while (!stopper->StopRequested()) {
-          auto workTuple = GetWork(m_WorkQueue);
-          auto uuid = std::get<0>(workTuple);
-          auto work = std::get<1>(workTuple);
-
+          auto work = GetWork(m_WorkQueue);
           if (work) {
+            std::string uuid = work->GetID();
             LOG(INFO) << "Worker Thread " << threadId << " started work ID: " << uuid << std::endl;
-            work->Start(uuid);
+            work->Start();
             LOG(INFO) << "Worker Thread " << threadId << " finished work ID: " << uuid << std::endl;
           }
         }
@@ -165,14 +163,12 @@ public:
       std::vector<uint8_t> request;
 
       if (Receive<std::vector<uint8_t>>(request)) {
-        std::string errors;
-        IPlugInPtr plugin = m_PlugIns.GetPlugIn(m_Config, request, errors);
+        std::string jsonResponse;
+        IPlugInPtr plugin = m_PlugIns.GetPlugIn(m_Config, request, jsonResponse);
         if (plugin) {
-          std::string uuid = AddWork(m_WorkQueue, plugin);
-          zmq_send(m_ZMQResponder, uuid.data(), uuid.size(), ZMQ_DONTWAIT);
-        } else {
-          zmq_send(m_ZMQResponder, errors.data(), errors.size(), ZMQ_DONTWAIT);
+          AddWork(m_WorkQueue, plugin);
         }
+        zmq_send(m_ZMQResponder, jsonResponse.data(), jsonResponse.size(), ZMQ_DONTWAIT);
       } 
     }
 

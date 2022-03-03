@@ -13,21 +13,13 @@ public:
 
 
   void
-  GetName(
-    std::string& pluginName
-  ) const override;
-
-
-  void
-  GetStatus(
-    std::string& statusMessage
-  ) const override;
+  Initialize(
+    std::string&
+  ) override;
 
 
   bool
-  Start(
-    const std::string& uuid
-  ) override;
+  Start() override;
 };
 
 

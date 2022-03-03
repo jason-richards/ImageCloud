@@ -22,20 +22,8 @@ public:
 
 
   void
-  GetName(
-    std::string& pluginName
-  ) const override;
-
-
-  void
-  GetStatus(
-    std::string& statusMessage
-  ) const override;
-
-
-  bool
-  Start(
-    const std::string& uuid
+  Initialize(
+    std::string&
   ) override;
 };
 

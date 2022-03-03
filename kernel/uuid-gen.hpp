@@ -13,6 +13,11 @@ public:
     uuid_unparse_upper(m_UUID, uuidString.data());
     return uuidString;
   }
+
+  std::string
+  GetID() {
+    return (*this)();
+  }
 };
 
 

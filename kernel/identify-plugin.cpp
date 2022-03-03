@@ -31,18 +31,10 @@ Identify::Identify(
 
 
 void
-Identify::GetName(
-  std::string& pluginName
-) const {
-  pluginName = std::string("Identify");
-}
-
-
-void
-Identify::GetStatus(
-  std::string& statusMessage
-) const {
-  statusMessage = std::string("OK");
+Identify::Initialize(
+  std::string& jsonResponse
+) {
+  jsonResponse = std::string("{\"status\" : \"OK\"}");
 }
 
 
@@ -62,9 +54,7 @@ PrepDirectory(
 
 
 bool
-Identify::Start(
-  const std::string& uuid
-) {
+Identify::Start() {
   auto path = PrepDirectory(m_Config["storage"].as<std::string>());
 
   cv::Mat decodedImage = cv::imdecode(m_SideData, CV_LOAD_IMAGE_GRAYSCALE);

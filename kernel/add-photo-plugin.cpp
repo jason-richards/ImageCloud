@@ -20,18 +20,10 @@ AddPhoto::AddPhoto(
 
 
 void
-AddPhoto::GetName(
-  std::string& pluginName
-) const {
-  pluginName = std::string("AddPhoto");
-}
-
-
-void
-AddPhoto::GetStatus(
-  std::string& statusMessage
-) const {
-  statusMessage = std::string("OK");
+AddPhoto::Initialize(
+  std::string& jsonResponse
+) {
+  jsonResponse = std::string("{\"status\" : \"OK\"}");
 }
 
 
@@ -60,11 +52,11 @@ PrepDirectory(
 
 
 bool
-AddPhoto::Start(
-  const std::string& uuid
-) {
+AddPhoto::Start() {
   std::string signature, timestamp, compression, location;
   int width = 0, height = 0;
+
+  std::string uuid = GetID();
 
   Artifacts::Exif::ProbePtr EP = Artifacts::Exif::CreateProbe(m_SideData.data(), m_SideData.size());
   Artifacts::Exif::GetCompression(EP, compression);

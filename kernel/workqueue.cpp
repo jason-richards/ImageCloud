@@ -1,16 +1,15 @@
 #include <list>
 #include <mutex>
-#include <tuple>
 #include <condition_variable>
 #include <iostream>
+
 #include "workqueue.hpp"
-#include "uuid-gen.hpp"
 
 
 class WorkQueue {
   std::mutex m_Mutex;
   std::condition_variable m_Conditional;
-  std::list<std::tuple<UUIDGenerator, IPlugInPtr> > m_Work;
+  std::list<IPlugInPtr> m_Work;
 
 public:
 
@@ -18,29 +17,27 @@ public:
  ~WorkQueue() {}
 
 
-  std::string 
+  void
   AddWork(
     IPlugInPtr& work
   ) {
-    std::tuple<UUIDGenerator, IPlugInPtr> task = std::make_tuple(UUIDGenerator(), work);
     std::unique_lock<std::mutex> lock(m_Mutex);
-    m_Work.push_back(task);
+    m_Work.push_back(work);
     m_Conditional.notify_one();
-    return std::get<0>(task)();
   }
 
 
-  std::tuple<std::string, IPlugInPtr>
+  IPlugInPtr
   GetWork() {
     std::unique_lock<std::mutex> lock(m_Mutex);
     if (m_Work.size()==0) {
       m_Conditional.wait(lock);
       if (m_Work.size()==0) {
-        return std::tuple<std::string, IPlugInPtr>("", nullptr);
+        return nullptr;
       }
     }
 
-    auto work = std::tuple<std::string, IPlugInPtr>(std::get<0>(m_Work.front())(), std::get<1>(m_Work.front()));
+    auto work = m_Work.front();
     m_Work.pop_front();
     return work;
   }
@@ -74,12 +71,12 @@ CreateWorkQ() {
  * @param IPlugInPtr - Pointer to the task to run. 
  * @result - Unique identifier string generated for the task.
  */
-std::string
+void
 AddWork(
   WorkQueuePtr wQ,
   IPlugInPtr work
 ) {
-  return wQ->AddWork(work);
+  wQ->AddWork(work);
 }
 
 
@@ -87,7 +84,7 @@ AddWork(
  * @param WorkQueuePtr - Pointer to the work queue.
  * @result - A pointer to the work returned.
  */
-std::tuple<std::string, IPlugInPtr>
+IPlugInPtr
 GetWork(
   WorkQueuePtr wQ
 ) {

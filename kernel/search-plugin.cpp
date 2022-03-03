@@ -8,7 +8,7 @@
 #include <rapidjson/istreamwrapper.h>
 #include <fstream>
 
-#define DEFAULT_SEARCH_RADIUS_MILES 100
+#define DEFAULT_SEARCH_RADIUS_MILES 10
 
 Search::Search(
   const YAML::Node& config,
@@ -56,22 +56,6 @@ Search::Search(
 }
 
 
-void
-Search::GetName(
-  std::string& pluginName
-) const {
-  pluginName = std::string("Search");
-}
-
-
-void
-Search::GetStatus(
-  std::string& statusMessage
-) const {
-  statusMessage = std::string("OK");
-}
-
-
 float
 GetDistanceKM(
   float latitude[2],
@@ -94,12 +78,15 @@ GetDistanceMiles(
 }
 
 
-bool
-Search::Start(
-  const std::string& uuid
+void
+Search::Initialize(
+  std::string& jsonResponse 
 ) {
   auto path = m_Config["storage"].as<std::string>() + "/Photos";
 
+  /*
+   *  Step 1: Filter source directories by Date, Year, Month, and/or Day.
+   */
   std::list<std::filesystem::directory_entry> directories;
   for (const auto& entry : std::filesystem::directory_iterator(path)) {
     if (entry.is_directory()) {
@@ -139,7 +126,11 @@ Search::Start(
     }
   }
 
-  std::list<std::filesystem::directory_entry> files;
+
+  /*
+   *  Step 2: Filter images by Name, and/or Location
+   */
+  std::list<std::string> files;
   for (const auto& entry : directories) {
     for (const auto& file : std::filesystem::directory_iterator(entry.path())) {
       if (!file.is_regular_file()) {
@@ -209,10 +200,10 @@ Search::Start(
             continue;
           }
 
-          std::string location = std::string(img_json["location"].GetString());
+          const char * location = img_json["location"].GetString();
 
           float latitude[2] = {0, 0}, longitude[2] = {0, 0};
-          if (std::sscanf(location.c_str(), "%f, %f", &latitude[0], &longitude[0]) != 2) {
+          if (std::sscanf(location, "%f, %f", &latitude[0], &longitude[0]) != 2) {
             continue;
           }
 
@@ -228,17 +219,27 @@ Search::Start(
         }
       }
 
-      files.push_back(file);
+      files.push_back(std::string(path.stem()));
     }
   }
 
-  std::list<std::string> uuids;
+
+  /*
+   *  Step 3: Generate JSON response string.
+   */
+  jsonResponse = std::string("{\"status\" : \"OK\", \"results\" : [");
+
   for (const auto& file : files) {
-    std::filesystem::path path(file.path());
-    uuids.push_back(path.stem());
+    if (&file != &files.front()) {
+      jsonResponse += ", ";
+    }
+
+    jsonResponse += "\"";
+    jsonResponse += file;
+    jsonResponse += "\"";
   }
 
-  return false;
+  jsonResponse += "]}";
 }
 
 

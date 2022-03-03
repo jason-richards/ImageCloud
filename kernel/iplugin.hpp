@@ -6,7 +6,9 @@
 #include <string>
 #include <memory>
 
-class IPlugIn {
+#include "uuid-gen.hpp"
+
+class IPlugIn : public UUIDGenerator {
 public:
   std::vector<uint8_t> m_SideData;
 
@@ -14,11 +16,8 @@ public:
     m_Request.CopyFrom(request, m_Request.GetAllocator());
   }
 
-  virtual void GetName(std::string& pluginName)       const = 0;
-  virtual void GetStatus(std::string& statusMessage)  const = 0;
-  virtual bool Start(const std::string& uuid) = 0;
-
-  virtual bool Valid() { return true;  }
+  virtual void Initialize(std::string&) = 0;
+  virtual bool Start() { return true;  }
   virtual bool Stop()  { return false; }
   virtual bool Pause() { return false; }
   virtual bool Kill()  { return false; }
