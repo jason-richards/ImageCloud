@@ -78,9 +78,9 @@ GetDistanceMiles(
 }
 
 
-void
+bool
 Search::Initialize(
-  std::string& jsonResponse 
+  Responder responder
 ) {
   auto path = m_Config["storage"].as<std::string>() + "/Photos";
 
@@ -227,7 +227,7 @@ Search::Initialize(
   /*
    *  Step 3: Generate JSON response string.
    */
-  jsonResponse = std::string("{\"status\" : \"OK\", \"results\" : [");
+  auto jsonResponse = std::string("{\"status\" : \"OK\", \"results\" : [");
 
   for (const auto& file : files) {
     if (&file != &files.front()) {
@@ -240,6 +240,8 @@ Search::Initialize(
   }
 
   jsonResponse += "]}";
+
+  return responder(jsonResponse.data(), jsonResponse.size(), false);
 }
 
 

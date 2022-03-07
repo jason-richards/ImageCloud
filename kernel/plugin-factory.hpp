@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "add-photo-plugin.hpp"
+#include "get-photo-plugin.hpp"
 #include "identify-plugin.hpp"
 #include "search-plugin.hpp"
 
@@ -19,6 +20,12 @@ public:
     RegisterBuilder(std::string("AddPhoto"), 
       [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
         return std::make_shared<AddPhoto>(config, request);
+      }
+    );
+
+    RegisterBuilder(std::string("GetPhoto"),
+      [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
+        return std::make_shared<GetPhoto>(config, request);
       }
     );
 
@@ -50,8 +57,10 @@ public:
   GetPlugIn(
     const YAML::Node& config,
     const std::vector<uint8_t>& request,
-    std::string& jsonResponse
+    Responder responder
   ) {
+    auto jsonResponse = std::string();
+
     rapidjson::Document doc;
 
     rapidjson::ParseResult ok = doc.Parse(reinterpret_cast<const char*>(request.data()));
@@ -88,7 +97,7 @@ public:
       }
     }
 
-    plugin->Initialize(jsonResponse);
+    plugin->Initialize(responder);
 
     return plugin;
   }

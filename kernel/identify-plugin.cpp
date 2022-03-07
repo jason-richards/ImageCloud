@@ -30,11 +30,12 @@ Identify::Identify(
 }
 
 
-void
+bool
 Identify::Initialize(
-  std::string& jsonResponse
+  Responder responder
 ) {
-  jsonResponse = std::string("{\"status\" : \"OK\"}");
+  auto r = std::string("{\"status\" : \"OK\"}");
+  return responder(r.data(), r.size(), false);
 }
 
 

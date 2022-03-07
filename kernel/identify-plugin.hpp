@@ -11,9 +11,9 @@ public:
   );
 
 
-  void
+  bool
   Initialize(
-    std::string&
+    Responder
   ) override;
 
 

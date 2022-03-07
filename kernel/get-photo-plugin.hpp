@@ -2,11 +2,14 @@
 
 #include "iplugin.hpp"
 
+#define WRITE_BLOCKSIZE 131072
 
-class AddPhoto : public IPlugIn {
+class GetPhoto : public IPlugIn {
 public:
+  std::string m_UUID;
 
-  AddPhoto(
+
+  GetPhoto(
     const YAML::Node& config,
     const rapidjson::Document& request
   );
@@ -17,9 +20,6 @@ public:
     Responder
   ) override;
 
-
-  bool
-  Start() override;
 };
 
 

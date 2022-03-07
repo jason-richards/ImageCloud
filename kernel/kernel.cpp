@@ -159,16 +159,20 @@ public:
     m_Running = true;
 
     stopper->Start();
+
+    Responder responder =
+      [&](const char * data, size_t size, bool more) {
+        return zmq_send(m_ZMQResponder, data, size, more ? ZMQ_SNDMORE : ZMQ_DONTWAIT);
+      };
+
     while (!stopper->StopRequested()) {
       std::vector<uint8_t> request;
 
       if (Receive<std::vector<uint8_t>>(request)) {
-        std::string jsonResponse;
-        IPlugInPtr plugin = m_PlugIns.GetPlugIn(m_Config, request, jsonResponse);
+        IPlugInPtr plugin = m_PlugIns.GetPlugIn(m_Config, request, responder);
         if (plugin) {
           AddWork(m_WorkQueue, plugin);
         }
-        zmq_send(m_ZMQResponder, jsonResponse.data(), jsonResponse.size(), ZMQ_DONTWAIT);
       } 
     }
 
