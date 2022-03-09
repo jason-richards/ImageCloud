@@ -26,23 +26,26 @@ GetThumbnail::Initialize(
   std::list<std::filesystem::directory_entry> directories;
   for (const auto& entry : std::filesystem::directory_iterator(pathname)) {
     if (entry.is_directory()) {
-      std::filesystem::path image_path {entry.path()/(m_UUID+".jpg")};
-      if (std::filesystem::exists(image_path)) {
-        /* Step 1:  Read image file. */
-        std::vector<uint8_t> buffer(std::filesystem::file_size(image_path));
-        std::ifstream image(image_path, std::ifstream::binary);
-        auto& status = image.read(reinterpret_cast<char *>(buffer.data()), buffer.size());
-        image.close();
+      std::filesystem::path photo_path {entry.path()/(m_UUID+".jpg")};
+      if (std::filesystem::exists(photo_path)) {
+
+        /* Step 1:  Read photo file. */
+        std::vector<uint8_t> buffer(std::filesystem::file_size(photo_path));
+        std::ifstream photo(photo_path, std::ifstream::binary);
+        auto& status = photo.read(reinterpret_cast<char *>(buffer.data()), buffer.size());
+        photo.close();
         if (!status) {
-          return false;
+          auto r = std::string("{\"status\" : \"ERROR\", \"message\" : \"Photo Not Found.\"}");
+          return responder(r.data(), r.size(), false);
         }
+
 
         /* Step 2:  Get the EXIF Thumbnail, if possible. */
         std::vector<char> thumbnail;
         Artifacts::Exif::ProbePtr EP = Artifacts::Exif::CreateProbe(buffer.data(), buffer.size());
         if (!Artifacts::Exif::GetThumbnail(EP, thumbnail)) {
-          fprintf(stderr, "no thumb\n");
-          return false;
+          auto r = std::string("{\"status\" : \"ERROR\", \"message\" : \"EXIF Thumbnail Not Found.\"}");
+          return responder(r.data(), r.size(), false);
         }
 
 
