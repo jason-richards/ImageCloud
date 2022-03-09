@@ -7,6 +7,7 @@
 
 #include "add-photo-plugin.hpp"
 #include "get-photo-plugin.hpp"
+#include "get-thumbnail-plugin.hpp"
 #include "identify-plugin.hpp"
 #include "search-plugin.hpp"
 
@@ -26,6 +27,12 @@ public:
     RegisterBuilder(std::string("GetPhoto"),
       [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
         return std::make_shared<GetPhoto>(config, request);
+      }
+    );
+
+    RegisterBuilder(std::string("GetThumb"),
+      [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
+        return std::make_shared<GetThumbnail>(config, request);
       }
     );
 

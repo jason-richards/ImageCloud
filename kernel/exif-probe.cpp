@@ -174,6 +174,23 @@ public:
 
     return true;
   }
+
+
+  bool
+  GetThumbnail(
+    std::vector<char>& thumbnail
+  ) {
+    if (!m_ED->data || !m_ED->size) {
+      return false;
+    }
+
+
+    thumbnail.assign(m_ED->data, m_ED->data + m_ED->size);
+
+    return true;
+  }
+
+
 private:
 
   bool
@@ -369,6 +386,20 @@ GetAltitude(
   return EP->GetAltitude(value);
 }
 
+
+/* Get the Thumbnail of the image.
+ *
+ * @param ProbePtr - Pointer to the Exif probe object.
+ * @param std::vector - Resulting image thumbnail.
+ * @result bool - True if successfully found Thumbnail.
+ */
+bool
+GetThumbnail(
+  ProbePtr EP,
+  std::vector<char>& thumbnail
+) {
+  return EP->GetThumbnail(thumbnail);
+}
 
 } // namespace Exif
 } // namespace Artifacts

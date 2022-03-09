@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <string>
-
+#include <vector>
 
 namespace Artifacts {
 namespace Exif {
@@ -127,6 +127,18 @@ GetAltitude(
   int&
 );
 
+
+/* Get the Thumbnail of the image.
+ *
+ * @param ProbePtr - Pointer to the Exif probe object.
+ * @param std::vector - Resulting image thumbnail.
+ * @result bool - True if successfully found Thumbnail.
+ */
+bool
+GetThumbnail(
+  ProbePtr,
+  std::vector<char>&
+);
 
 } // namespace Exif
 } // namespace Artifacts

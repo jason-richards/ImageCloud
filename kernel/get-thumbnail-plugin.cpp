@@ -1,0 +1,72 @@
+#include <filesystem>
+#include <fstream>
+
+#include "get-thumbnail-plugin.hpp"
+#include "exif-probe.hpp"
+
+
+GetThumbnail::GetThumbnail(
+  const YAML::Node& config,
+  const rapidjson::Document& request
+) : IPlugIn(config, request) {
+  if (request.HasMember("uuid") && request["uuid"].IsString()) {
+    m_UUID = request["uuid"].GetString();
+    std::transform(m_UUID.begin(), m_UUID.end(), m_UUID.begin(),
+      [](unsigned char c){ return std::toupper(c); });
+  }
+}
+
+
+bool
+GetThumbnail::Initialize(
+  Responder responder
+) {
+  auto pathname = m_Config["storage"].as<std::string>() + "/Photos";
+
+  std::list<std::filesystem::directory_entry> directories;
+  for (const auto& entry : std::filesystem::directory_iterator(pathname)) {
+    if (entry.is_directory()) {
+      std::filesystem::path image_path {entry.path()/(m_UUID+".jpg")};
+      if (std::filesystem::exists(image_path)) {
+        /* Step 1:  Read image file. */
+        std::vector<uint8_t> buffer(std::filesystem::file_size(image_path));
+        std::ifstream image(image_path, std::ifstream::binary);
+        auto& status = image.read(reinterpret_cast<char *>(buffer.data()), buffer.size());
+        image.close();
+        if (!status) {
+          return false;
+        }
+
+        /* Step 2:  Get the EXIF Thumbnail, if possible. */
+        std::vector<char> thumbnail;
+        Artifacts::Exif::ProbePtr EP = Artifacts::Exif::CreateProbe(buffer.data(), buffer.size());
+        if (!Artifacts::Exif::GetThumbnail(EP, thumbnail)) {
+          fprintf(stderr, "no thumb\n");
+          return false;
+        }
+
+
+        /* Step 3:  Write JSON response header. */
+        auto r = std::string("{\"status\" : \"OK\", \"bytes\" : ");
+        r += std::to_string(thumbnail.size());
+        r += " }";
+        if (!responder(r.data(), r.size(), true)) {
+          return false;
+        }
+
+
+        /* Step 4:  Transfer thumbnail. */
+        if (!responder(thumbnail.data(), thumbnail.size(), false)) {
+          return false;
+        }
+
+        return true;
+      }
+    }
+  }
+
+  auto r = std::string("{\"status\" : \"ERROR\", \"message\" : \"File Not Found.\"}");
+  return responder(r.data(), r.size(), false);
+}
+
+
