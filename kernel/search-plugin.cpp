@@ -1,12 +1,12 @@
-#include "search-plugin.hpp"
-
 #include <filesystem>
 #include <algorithm>
 #include <iomanip>
 
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
-#include <fstream>
+
+#include "search-plugin.hpp"
+#include "file-io.hpp"
 
 #define DEFAULT_SEARCH_RADIUS_MILES 10
 
@@ -157,11 +157,10 @@ Search::Initialize(
 
       auto filename = path.filename();
       if (m_Name || m_Location) {
-        std::ifstream ifs(file.path());
-        rapidjson::IStreamWrapper isw(ifs);
+        auto ifs = InputFile::Create(file.path());
+        rapidjson::IStreamWrapper isw(ifs->Get());
         rapidjson::Document img_json;
         rapidjson::ParseResult ok = img_json.ParseStream(isw);
-        ifs.close();
         if (!ok) {
           continue;
         }

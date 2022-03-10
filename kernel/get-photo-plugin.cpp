@@ -1,7 +1,7 @@
 #include <filesystem>
-#include <fstream>
 
 #include "get-photo-plugin.hpp"
+#include "file-io.hpp"
 
 
 GetPhoto::GetPhoto(
@@ -39,16 +39,14 @@ GetPhoto::Initialize(
 
         /* Step 2:  Transfer photo. */
         std::vector<char> buffer(WRITE_BLOCKSIZE);
-        std::ifstream photo(photo_path);
-        while (!photo.eof()) {
-          photo.read(buffer.data(), buffer.size());
-          size_t bytes = photo.gcount();
-          if (!responder(buffer.data(), bytes, photo.eof() ? false : true)) {
+        auto photo = InputFile::Create(photo_path);
+        while (!photo->eof()) {
+          photo->read(buffer.data(), buffer.size());
+          size_t bytes = photo->gcount();
+          if (!responder(buffer.data(), bytes, photo->eof() ? false : true)) {
             return false;
           }
         }
-
-        photo.close();
 
         return true;
       }

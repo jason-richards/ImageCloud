@@ -1,9 +1,9 @@
 #include <filesystem>
 #include <functional>
-#include <fstream>
 #include <string>
 
 #include "identify-plugin.hpp"
+#include "file-io.hpp"
 
 #pragma GCC diagnostic push
 
@@ -77,9 +77,8 @@ Identify::Start() {
   model->setLabelInfo(label, m_Name);
   model->write(path + "/" + labelString + ".yaml");
 
-  std::ofstream photo(std::string(path + "/" + labelString + ".jpg"), std::ios::binary);
-  photo.write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
-  photo.close();
+  auto photo = OutputFile::Create(std::string(path + "/" + labelString + ".jpg"));
+  photo->write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
 
   decodedImage.release();
 

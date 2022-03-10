@@ -1,5 +1,4 @@
 #include <filesystem>
-#include <fstream>
 #include <ctime>
 #include <iomanip>
 
@@ -10,6 +9,7 @@
 #include "sha256-probe.hpp"
 #include "face-probe.hpp"
 #include "miso.hpp"
+#include "file-io.hpp"
 
 
 AddPhoto::AddPhoto(
@@ -83,13 +83,11 @@ AddPhoto::Start() {
 
   auto path = PrepDirectory(m_Config["storage"].as<std::string>(), timestamp);
 
-  std::ofstream manifest(std::string(path + "/" + uuid + ".json"));
-  Miso::Write(MP, manifest);
-  manifest.close();
+  auto manifest = OutputFile::Create(std::string(path + "/" + uuid + ".json"));
+  Miso::Write(MP, manifest->Get());
 
-  std::ofstream image(std::string(path + "/" + uuid + ".jpg"));
-  image.write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
-  image.close();
+  auto photo = OutputFile::Create(std::string(path + "/" + uuid + ".jpg"));
+  photo->write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
 
   return true;
 }

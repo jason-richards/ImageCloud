@@ -1,8 +1,8 @@
 #include <filesystem>
-#include <fstream>
 
 #include "get-thumbnail-plugin.hpp"
 #include "exif-probe.hpp"
+#include "file-io.hpp"
 
 
 GetThumbnail::GetThumbnail(
@@ -31,9 +31,8 @@ GetThumbnail::Initialize(
 
         /* Step 1:  Read photo file. */
         std::vector<uint8_t> buffer(std::filesystem::file_size(photo_path));
-        std::ifstream photo(photo_path, std::ifstream::binary);
-        auto& status = photo.read(reinterpret_cast<char *>(buffer.data()), buffer.size());
-        photo.close();
+        auto photo = InputFile::Create(photo_path);
+        auto& status = photo->read(reinterpret_cast<char *>(buffer.data()), buffer.size());
         if (!status) {
           auto r = std::string("{\"status\" : \"ERROR\", \"message\" : \"Photo Not Found.\"}");
           return responder(r.data(), r.size(), false);
