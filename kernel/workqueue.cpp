@@ -1,8 +1,6 @@
 #include <list>
 #include <mutex>
 #include <condition_variable>
-#include <iostream>
-
 #include "workqueue.hpp"
 
 

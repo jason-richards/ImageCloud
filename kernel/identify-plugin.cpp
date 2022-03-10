@@ -60,26 +60,26 @@ Identify::Start() {
 
   cv::Mat decodedImage = cv::imdecode(m_SideData, CV_LOAD_IMAGE_GRAYSCALE);
   if (decodedImage.data == nullptr) {
-    throw std::runtime_error("Error decoding image.");
+    throw std::runtime_error("Error decoding photo.");
   }
 
   std::vector<int> labels;
-  std::vector<cv::Mat> images;
+  std::vector<cv::Mat> photos;
   int label = std::hash<std::string>{}(m_Name);
   std::string labelString = std::to_string(label);
 
   labels.push_back(label);
-  images.push_back(decodedImage);
+  photos.push_back(decodedImage);
 
   cv::Ptr<cv::face::FaceRecognizer> model = cv::face::LBPHFaceRecognizer::create();
 
-  model->train(images, labels);
+  model->train(photos, labels);
   model->setLabelInfo(label, m_Name);
   model->write(path + "/" + labelString + ".yaml");
 
-  std::ofstream image(std::string(path + "/" + labelString + ".jpg"), std::ios::binary);
-  image.write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
-  image.close();
+  std::ofstream photo(std::string(path + "/" + labelString + ".jpg"), std::ios::binary);
+  photo.write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
+  photo.close();
 
   decodedImage.release();
 

@@ -24,7 +24,7 @@ public:
 
   Probe(
     const std::string& cascadePath,
-    const std::vector<uint8_t>& image
+    const std::vector<uint8_t>& photo
   ) {
     if (m_FS == nullptr) {
       m_FS.reset(new cv::FileStorage(cascadePath, cv::FileStorage::READ));
@@ -35,9 +35,9 @@ public:
       throw std::runtime_error("Error loading cascade.");
     }
 
-    cv::Mat decodedImage = cv::imdecode(image, CV_LOAD_IMAGE_GRAYSCALE);
+    cv::Mat decodedImage = cv::imdecode(photo, CV_LOAD_IMAGE_GRAYSCALE);
     if (decodedImage.data == nullptr) {
-      throw std::runtime_error("Error decoding image.");
+      throw std::runtime_error("Error decoding photo.");
     }
 
     cv::equalizeHist(decodedImage, decodedImage);
@@ -65,20 +65,20 @@ std::unique_ptr<cv::FileStorage> Probe::m_FS = nullptr;
 /* Create a new Face probe.
  *
  * @param std::string - Face cascade path.
- * @param uint8_t * - Pointer to image data.
+ * @param uint8_t * - Pointer to photo data.
  * @param size_t - Image size.
  * @result ProbePtr - Face probe pointer.
  */
 ProbePtr
 CreateProbe(
   const std::string& cascadePath,
-  const std::vector<uint8_t>& image
+  const std::vector<uint8_t>& photo
 ) {
-  return std::make_shared<Probe>(cascadePath, image);
+  return std::make_shared<Probe>(cascadePath, photo);
 }
 
 
-/* Obtain a vector of all the faces found in the image.
+/* Obtain a vector of all the faces found in the photo.
  *
  * @param ProbePtr - Face probe pointer.
  * @param std::vector<FaceRectangleT> - Vector of face rectangles

@@ -16,7 +16,8 @@ public:
 
   using PlugInBuilder = std::function<IPlugInPtr(const YAML::Node&, const rapidjson::Document&)>;
 
-
+  /* The PlugIn Factory.
+   */
   PlugInFactory() {
     RegisterBuilder(std::string("AddPhoto"), 
       [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
@@ -49,7 +50,13 @@ public:
     );
   }
 
-  void
+
+  /* A helper function to build a JSON error response.
+   *
+   * @param message - An error message to wrap in a JSON response string.
+   * @param jsonResponse - A JSON response string.
+   */
+  inline void
   SetError(
     const std::string& message,
     std::string& jsonResponse
@@ -60,6 +67,12 @@ public:
   }
 
 
+  /* Find a plugin builder and execute it.  Write the response in the given responder.
+   *
+   * @param config - A reference to the global configuration.
+   * @param request - A reference to the plugin request.  Usually a JSON string + some binary data.
+   * @param responder - The plugin request responder to write response or error responses.
+   */
   IPlugInPtr
   GetPlugIn(
     const YAML::Node& config,
@@ -110,6 +123,11 @@ public:
   }
 
 
+  /* Register a plugin builder with the builder map by name.
+   *
+   * @param std::string - The String name of the plugin builder.
+   * @param PlugInBuilder - The plugin builder.
+   */
   void
   RegisterBuilder(
     const std::string& name,
@@ -119,6 +137,11 @@ public:
   }
 
 
+  /* Search the builder map by name for a plugin builder.
+   *
+   * @param std::string - The String name of the plugin builder.
+   * @result bool - True if successfully found a builder.
+   */
   bool
   FindBuilder(
     const std::string& name,

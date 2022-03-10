@@ -25,30 +25,30 @@ GetPhoto::Initialize(
   std::list<std::filesystem::directory_entry> directories;
   for (const auto& entry : std::filesystem::directory_iterator(pathname)) {
     if (entry.is_directory()) {
-      std::filesystem::path image_path {entry.path()/(m_UUID+".jpg")};
-      if (std::filesystem::exists(image_path)) {
+      std::filesystem::path photo_path {entry.path()/(m_UUID+".jpg")};
+      if (std::filesystem::exists(photo_path)) {
 
         /* Step 1:  Write JSON response header. */
         auto r = std::string("{\"status\" : \"OK\", \"bytes\" : ");
-        r += std::to_string(std::filesystem::file_size(image_path));
+        r += std::to_string(std::filesystem::file_size(photo_path));
         r += " }";
         if (!responder(r.data(), r.size(), true)) {
           return false;
         }
 
 
-        /* Step 2:  Transfer image. */
+        /* Step 2:  Transfer photo. */
         std::vector<char> buffer(WRITE_BLOCKSIZE);
-        std::ifstream image(image_path);
-        while (!image.eof()) {
-          image.read(buffer.data(), buffer.size());
-          size_t bytes = image.gcount();
-          if (!responder(buffer.data(), bytes, image.eof() ? false : true)) {
+        std::ifstream photo(photo_path);
+        while (!photo.eof()) {
+          photo.read(buffer.data(), buffer.size());
+          size_t bytes = photo.gcount();
+          if (!responder(buffer.data(), bytes, photo.eof() ? false : true)) {
             return false;
           }
         }
 
-        image.close();
+        photo.close();
 
         return true;
       }

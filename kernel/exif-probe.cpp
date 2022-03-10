@@ -220,7 +220,7 @@ private:
 
 /* Create a new Exif probe.
  *
- * @param uint8_t * - Pointer to image data.
+ * @param uint8_t * - Pointer to photo data.
  * @param size_t - Image size.
  * @result ProbePtr - Exif probe pointer.
  */
@@ -233,7 +233,7 @@ CreateProbe(
 }
 
 
-/* Get the compression format of the image.
+/* Get the compression format of the photo.
  *
  * @param ProbePtr - Pointer to the Exif probe object.
  * @param std::string - Resulting compression format string
@@ -248,10 +248,10 @@ GetCompression(
 }
 
 
-/* Get the width of the image.
+/* Get the width of the photo.
  *
  * @param ProbePtr - Pointer to the Exif probe object.
- * @param int - Resulting image width.
+ * @param int - Resulting photo width.
  * @result bool - True if successfully found width.
  */
 bool
@@ -276,10 +276,10 @@ GetWidth(
 }
 
 
-/* Get the height of the image.
+/* Get the height of the photo.
  *
  * @param ProbePtr - Pointer to the Exif probe object.
- * @param int - Resulting image height.
+ * @param int - Resulting photo height.
  * @result bool - True if successfully found height.
  */
 bool
@@ -305,10 +305,10 @@ GetHeight(
 }
 
 
-/* Get the timestamp of the image.
+/* Get the timestamp of the photo.
  *
  * @param ProbePtr - Pointer to the Exif probe object.
- * @param int - Resulting image timestamp.
+ * @param int - Resulting photo timestamp.
  * @result bool - True if successfully found timestamp.
  */
 bool
@@ -320,10 +320,10 @@ GetDateTime(
 }
 
 
-/* Get the Latitude of the image.
+/* Get the Latitude of the photo.
  *
  * @param ProbePtr - Pointer to the Exif probe object.
- * @param std::string - Resulting image Latitude.
+ * @param std::string - Resulting photo Latitude.
  * @result bool - True if successfully found Latitude.
  */
 bool
@@ -335,10 +335,10 @@ GetLatitude(
 }
 
 
-/* Get the Longitude of the image.
+/* Get the Longitude of the photo.
  *
  * @param ProbePtr - Pointer to the Exif probe object.
- * @param std::string - Resulting image Longitude.
+ * @param std::string - Resulting photo Longitude.
  * @result bool - True if successfully found Longitude.
  */
 bool
@@ -372,10 +372,10 @@ GetLocation(
 }
 
 
-/* Get the Altitude of the image.
+/* Get the Altitude of the photo.
  *
  * @param ProbePtr - Pointer to the Exif probe object.
- * @param std::string - Resulting image Altitude.
+ * @param std::string - Resulting photo Altitude.
  * @result bool - True if successfully found Altitude.
  */
 bool
@@ -387,10 +387,10 @@ GetAltitude(
 }
 
 
-/* Get the Thumbnail of the image.
+/* Get the Thumbnail of the photo.
  *
  * @param ProbePtr - Pointer to the Exif probe object.
- * @param std::vector - Resulting image thumbnail.
+ * @param std::vector - Resulting photo thumbnail.
  * @result bool - True if successfully found Thumbnail.
  */
 bool
