@@ -48,7 +48,7 @@ GetPhoto::Initialize(
           }
         }
 
-        return true;
+        return false;
       }
     }
   }

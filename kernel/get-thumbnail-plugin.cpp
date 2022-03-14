@@ -62,7 +62,7 @@ GetThumbnail::Initialize(
           return false;
         }
 
-        return true;
+        return false;
       }
     }
   }

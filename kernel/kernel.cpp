@@ -162,6 +162,24 @@ public:
 
     Responder responder =
       [&](const char * data, size_t size, bool more) {
+        LOG(INFO) << "Sending Response: \[";
+
+        for (size_t i = 0; i < 32; i++)
+          if (i > size)
+            LOG(INFO) << ' ';
+          else
+            LOG(INFO) << std::hex << std::setw(2)
+                      << std::setfill('0')
+                      << static_cast<unsigned int>(data[i]&0xff)
+                      << " ";
+
+        LOG(INFO) << " | ";
+
+        for (size_t i = 0; i < 32; i++)
+          LOG(INFO) << ((i > size) ? ' ' : ((data[i] >= ' ' && data[i] < '~') ? data[i] : '.'));
+
+        LOG(INFO) << std::dec << "] (" << size << " bytes)" << std::endl;
+
         return zmq_send(m_ZMQResponder, data, size, more ? ZMQ_SNDMORE : ZMQ_DONTWAIT);
       };
 
@@ -169,6 +187,8 @@ public:
       std::vector<uint8_t> request;
 
       if (Receive<std::vector<uint8_t>>(request)) {
+        LOG(INFO) << "Incoming Request: \'" << request.data() << "\'" << std::endl;
+
         IPlugInPtr plugin = m_PlugIns.GetPlugIn(m_Config, request, responder);
         if (plugin) {
           AddWork(m_WorkQueue, plugin);
