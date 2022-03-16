@@ -86,7 +86,7 @@ AddPhoto::Start() {
   auto manifest = OutputFile::Create(std::string(path + "/" + uuid + ".json"));
   Miso::Write(MP, manifest->Get());
 
-  auto photo = OutputFile::Create(std::string(path + "/" + uuid + ".jpg"));
+  auto photo = OutputFile::Create(std::string(path + "/" + uuid));
   photo->write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
 
   return true;

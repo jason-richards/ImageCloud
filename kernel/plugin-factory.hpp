@@ -10,6 +10,7 @@
 #include "get-thumbnail-plugin.hpp"
 #include "identify-plugin.hpp"
 #include "search-plugin.hpp"
+#include "de-duplicate-plugin.hpp"
 
 class PlugInFactory {
 public:
@@ -46,6 +47,12 @@ public:
     RegisterBuilder(std::string("Search"),
       [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
         return std::make_shared<Search>(config, request);
+      }
+    );
+
+    RegisterBuilder(std::string("DeDuplicate"),
+      [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
+        return std::make_shared<DeDuplicate>(config, request);
       }
     );
   }

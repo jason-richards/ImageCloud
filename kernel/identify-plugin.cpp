@@ -77,7 +77,7 @@ Identify::Start() {
   model->setLabelInfo(label, m_Name);
   model->write(path + "/" + labelString + ".yaml");
 
-  auto photo = OutputFile::Create(std::string(path + "/" + labelString + ".jpg"));
+  auto photo = OutputFile::Create(std::string(path + "/" + labelString));
   photo->write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
 
   decodedImage.release();

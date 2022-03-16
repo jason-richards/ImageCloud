@@ -25,7 +25,7 @@ GetPhoto::Initialize(
   std::list<std::filesystem::directory_entry> directories;
   for (const auto& entry : std::filesystem::directory_iterator(pathname)) {
     if (entry.is_directory()) {
-      std::filesystem::path photo_path {entry.path()/(m_UUID+".jpg")};
+      std::filesystem::path photo_path {entry.path()/m_UUID};
       if (std::filesystem::exists(photo_path)) {
 
         /* Step 1:  Write JSON response header. */
