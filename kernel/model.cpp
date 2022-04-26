@@ -58,6 +58,7 @@ Model::LoadModel(
   std::unique_lock<std::mutex> lock(m_ModelData->m_Mutex);
   try {
     m_ModelData->m_Model->read(where + "/model.yaml");
+    m_ModelData->m_LabelCounter = m_ModelData->m_Model->getLabelsByString("").size();
   } catch (...) {
 
   };
@@ -80,7 +81,9 @@ Model::Identify(
 ) {
   std::unique_lock<std::mutex> lock(m_ModelData->m_Mutex);
 
-  int id = m_ModelData->GetNextLabel();
+  std::vector<int> ids = m_ModelData->m_Model->getLabelsByString(name);
+
+  int id = ids.size() == 0 ? m_ModelData->GetNextLabel() : ids[0];
   std::vector<int> labels(1, id);
 
   cv::Mat decodedImage = cv::imdecode(image, CV_LOAD_IMAGE_GRAYSCALE);
@@ -91,7 +94,7 @@ Model::Identify(
   std::vector<cv::Mat> photos;
   photos.push_back(decodedImage);
 
-  if (id == 0) {
+  if (m_ModelData->m_Model->empty()) {
     m_ModelData->m_Model->train(photos, labels);
   } else {
     m_ModelData->m_Model->update(photos, labels);
