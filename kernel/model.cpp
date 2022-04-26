@@ -55,6 +55,7 @@ void
 Model::LoadModel(
   const std::string& where
 ) {
+  std::unique_lock<std::mutex> lock(m_ModelData->m_Mutex);
   try {
     m_ModelData->m_Model->read(where + "/model.yaml");
   } catch (...) {

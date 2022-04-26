@@ -4,6 +4,8 @@
 
 #include "identify-plugin.hpp"
 #include "file-io.hpp"
+#include "model.hpp"
+#include "sha256-probe.hpp"
 
 #pragma GCC diagnostic push
 
@@ -56,32 +58,25 @@ PrepDirectory(
 
 bool
 Identify::Start() {
-  auto path = PrepDirectory(m_Config["storage"].as<std::string>());
+  Model::ModelPtr& g_ModelInstancePtr = Model::GetInstance();
 
-  cv::Mat decodedImage = cv::imdecode(m_SideData, CV_LOAD_IMAGE_GRAYSCALE);
-  if (decodedImage.data == nullptr) {
-    throw std::runtime_error("Error decoding photo.");
+  std::string path = PrepDirectory(m_Config["storage"].as<std::string>());
+  g_ModelInstancePtr->Identify(m_Name, m_SideData);
+  g_ModelInstancePtr->PersistModel(m_Config["storage"].as<std::string>() + "/Models");
+
+  std::string facechip_path(path + "/" + m_Name);
+  if (!std::filesystem::exists(facechip_path)) {
+    if (!std::filesystem::create_directory(facechip_path)) {
+      throw std::runtime_error("Unable to create Model facechip path: " + facechip_path);
+    }
   }
 
-  std::vector<int> labels;
-  std::vector<cv::Mat> photos;
-  int label = std::hash<std::string>{}(m_Name);
-  std::string labelString = std::to_string(label);
+  std::string facechip_name;
+  Artifacts::SHA256::ProbePtr SP = Artifacts::SHA256::CreateProbe(m_SideData.data(), m_SideData.size());
+  Artifacts::SHA256::GetSignature128(SP, facechip_name);
 
-  labels.push_back(label);
-  photos.push_back(decodedImage);
-
-  cv::Ptr<cv::face::FaceRecognizer> model = cv::face::LBPHFaceRecognizer::create();
-
-  model->train(photos, labels);
-  model->setLabelInfo(label, m_Name);
-  model->write(path + "/" + labelString + ".yaml");
-
-  auto photo = OutputFile::Create(std::string(path + "/" + labelString));
+  OutputFile::OutputFilePtr photo = OutputFile::Create(std::string(facechip_path + "/" + facechip_name));
   photo->write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
-
-  decodedImage.release();
-
   return true;
 }
 

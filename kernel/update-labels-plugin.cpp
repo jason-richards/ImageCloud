@@ -63,7 +63,7 @@ UpdateLabels::Start() {
       continue;
     }
 
-    model->read("/mnt/hgfs/VMShare/origin/Models/model.yaml");
+    model->read(path);
 
     loaded = true;
   }
@@ -127,7 +127,8 @@ UpdateLabels::Start() {
           cv::Mat croppedRef(decodedImage, cv::Rect(face.x, face.y, face.width, face.height));
           model->predict(croppedRef, label, confidence);
           fprintf(stdout, "\t%s: %i, %f\n", model->getLabelInfo(label).c_str(), label, confidence);
-          cv::imwrite("test.jpg", croppedRef);
+          auto filename = std::to_string(std::rand()) + ".jpg";
+          cv::imwrite(filename, croppedRef);
         }
       }
     }

@@ -256,6 +256,35 @@ public:
 
 
   void
+  SetFaceLabels(
+    const std::vector<std::string>& labels
+  ) {
+    rapidjson::Document::AllocatorType& allocator = m_Doc.GetAllocator();
+    rapidjson::Value array(rapidjson::kArrayType);
+    for (auto label : labels) {
+      rapidjson::Value v;
+      v.SetString(label.c_str(), label.length(), allocator);
+      array.PushBack(v, allocator);
+    }
+
+    m_Doc.AddMember("labels", array, allocator);
+  }
+
+
+  void
+  GetFaceLabels(
+    std::vector<std::string>& labels
+  ) {
+    if (m_Doc.HasMember("labels") && m_Doc["labels"].IsArray()) {
+      const auto& f = m_Doc["labels"];
+      for (auto iter = f.Begin(); iter != f.End(); iter++) {
+        labels.push_back((*iter).GetString());
+      }
+    }
+  }
+
+
+  void
   Write(
     std::ostream& out
   ) {
@@ -431,6 +460,24 @@ GetFaceRectangles(
   std::vector<FaceRectangleT>& faces
 ) {
   context->GetFaceRectangles(faces);
+}
+
+
+void
+SetFaceLabels(
+  MisoPtr context,
+  const std::vector<std::string>& labels
+) {
+  context->SetFaceLabels(labels);
+}
+
+
+void
+GetFaceLabels(
+  MisoPtr context,
+  std::vector<std::string>& labels
+) {
+  context->GetFaceLabels(labels);
 }
 
 

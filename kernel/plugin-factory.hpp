@@ -11,6 +11,7 @@
 #include "identify-plugin.hpp"
 #include "search-plugin.hpp"
 #include "de-duplicate-plugin.hpp"
+#include "update-labels-plugin.hpp"
 
 class PlugInFactory {
 public:
@@ -23,6 +24,12 @@ public:
     RegisterBuilder(std::string("AddPhoto"), 
       [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
         return std::make_shared<AddPhoto>(config, request);
+      }
+    );
+
+    RegisterBuilder(std::string("DeDuplicate"),
+      [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
+        return std::make_shared<DeDuplicate>(config, request);
       }
     );
 
@@ -50,9 +57,9 @@ public:
       }
     );
 
-    RegisterBuilder(std::string("DeDuplicate"),
+    RegisterBuilder(std::string("UpdateLabels"),
       [](const YAML::Node& config, const rapidjson::Document& request)->IPlugInPtr {
-        return std::make_shared<DeDuplicate>(config, request);
+        return std::make_shared<UpdateLabels>(config, request);
       }
     );
   }

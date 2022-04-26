@@ -9,6 +9,7 @@
 #include "plugin-factory.hpp"
 #include "workqueue.hpp"
 #include "aixlog.hpp"
+#include "model.hpp"
 
 namespace KERNEL {
 
@@ -96,6 +97,20 @@ public:
     if (!std::filesystem::exists(storage_path)) {
       throw std::runtime_error("Invalid storage location: " + storage_path);
     }
+
+    std::string model_path = storage_path + "/Models";
+    if (!std::filesystem::exists(model_path)) {
+      if (!std::filesystem::create_directory(model_path)) {
+        throw std::runtime_error("Unable to create Model path: " + model_path);
+      }
+    }
+
+    auto& g_ModelInstancePtr = Model::GetInstance();
+    if (g_ModelInstancePtr == nullptr) {
+      throw std::runtime_error("Unable to retrieve Model instance.");
+    }
+
+    g_ModelInstancePtr->LoadModel(model_path);
 
     std::string photo_path = storage_path + "/Photos";
     LOG(INFO) << "Photo Path: "             << photo_path         << std::endl;
