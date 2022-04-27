@@ -3,6 +3,7 @@
 #include "update-labels-plugin.hpp"
 #include "model.hpp"
 #include "miso.hpp"
+#include "file-io.hpp"
 
 #pragma GCC diagnostic push
 
@@ -66,6 +67,8 @@ UpdateLabels::Start() {
     model->read(path);
 
     loaded = true;
+
+    break;
   }
 
   if (!loaded) {
@@ -118,17 +121,21 @@ UpdateLabels::Start() {
         std::vector<Miso::FaceRectangleT> faces;
         Miso::GetFaceRectangles(MP, faces);
 
-        fprintf(stdout, "%s\n", photo_path.c_str());
-
+        std::vector<std::string> labels;
         for (auto& face : faces) {
           int label = -1;
           double confidence = 0;
-          fprintf(stdout, "%d:%d, %d:%d\n", face.x, face.y, face.width, face.height);
           cv::Mat croppedRef(decodedImage, cv::Rect(face.x, face.y, face.width, face.height));
           model->predict(croppedRef, label, confidence);
-          fprintf(stdout, "\t%s: %i, %f\n", model->getLabelInfo(label).c_str(), label, confidence);
           auto filename = std::to_string(std::rand()) + ".jpg";
           cv::imwrite(filename, croppedRef);
+          labels.push_back(model->getLabelInfo(label).c_str());
+        }
+
+        if (labels.size()) {
+          Miso::SetFaceLabels(MP, labels);
+          auto manifest = OutputFile::Create(meta_path);
+          Miso::Write(MP, manifest->Get());
         }
       }
     }

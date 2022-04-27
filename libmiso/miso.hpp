@@ -72,6 +72,7 @@ void SetLocation        (MisoPtr context, const std::string& location);
 void GetLocation        (MisoPtr context, std::string& location);
 void SetFaceRectangles  (MisoPtr context, const std::vector<FaceRectangleT>& faces);
 void GetFaceRectangles  (MisoPtr context, std::vector<FaceRectangleT>& faces);
+void SetFaceLabels      (MisoPtr context, const std::vector<std::string>& labels);
 void GetFaceLabels      (MisoPtr context, std::vector<std::string>& labels);
 void Write              (MisoPtr context, std::ostream&);
 
