@@ -166,11 +166,11 @@ Search::Initialize(
         }
 
         if (m_Name) {
-          if (!img_json.HasMember("names")) {
+          if (!img_json.HasMember("labels")) {
             continue;
           }
 
-          const rapidjson::Value& names = img_json["names"];
+          const rapidjson::Value& names = img_json["labels"];
           if (names.IsArray()) {
             bool found = false;
             for (const auto& n : names.GetArray()) {
