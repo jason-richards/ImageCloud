@@ -130,6 +130,8 @@ UpdateLabels::Start() {
           labels.push_back(model->getLabelInfo(label).c_str());
         }
 
+        decodedImage.release();
+
         if (labels.size()) {
           Miso::SetFaceLabels(MP, labels);
           auto manifest = OutputFile::Create(meta_path);
