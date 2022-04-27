@@ -124,11 +124,9 @@ UpdateLabels::Start() {
         std::vector<std::string> labels;
         for (auto& face : faces) {
           int label = -1;
-          double confidence = 0;
+          double confidence = 0.0;
           cv::Mat croppedRef(decodedImage, cv::Rect(face.x, face.y, face.width, face.height));
           model->predict(croppedRef, label, confidence);
-          auto filename = std::to_string(std::rand()) + ".jpg";
-          cv::imwrite(filename, croppedRef);
           labels.push_back(model->getLabelInfo(label).c_str());
         }
 
