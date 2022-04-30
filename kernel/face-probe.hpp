@@ -15,7 +15,7 @@ using ProbePtr = std::shared_ptr<Probe>;
  *
  * @param std::string - Face cascade path.
  * @param std::vector<uint8_t> - Image.
- * @result Probe& - Face probe reference.
+ * @result ProbePtr - Face probe pointer.
  */
 ProbePtr
 CreateProbe(
@@ -26,7 +26,7 @@ CreateProbe(
 
 /* Obtain a vector of all the faces found in the image.
  *
- * @param const Probe - Face probe reference.
+ * @param ProbePtr - Face probe pointer
  * @param std::vector<FaceRectangleT> - Vector of face rectangles
  */
 void
