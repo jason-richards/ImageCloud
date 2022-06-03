@@ -32,14 +32,16 @@ PrepDirectory(
   const std::string& base_path,
   const std::string& timestamp
 ) {
-  struct tm timeinfo;
-  if (!strptime(timestamp.c_str(), "%Y:%m:%d %H:%M:%S", &timeinfo)) {
-    throw std::runtime_error("Invalid Date/Time format.");
-  }
-
-  std::stringstream ss;
-  ss << base_path << "/Photos/" << std::put_time(&timeinfo, "%Y-%m-%d");
-
+  struct tm timeinfo;                                                                                                   
+  std::stringstream ss;                                                                                                 
+                                                                                                                        
+  if (!strptime(timestamp.c_str(), "%Y:%m:%d %H:%M:%S", &timeinfo)) {                                                   
+    std::time_t t = std::time(0);                                                                                       
+    ss << base_path << "/Photos/" << std::put_time(std::localtime(&t), "%Y-%m-%d");                                     
+  } else {                                                                                                              
+    ss << base_path << "/Photos/" << std::put_time(&timeinfo, "%Y-%m-%d");                                              
+  }                                                                                                                     
+                                                                                                                        
   std::string new_path = ss.str();
   if (!std::filesystem::exists(new_path)) {
     if (!std::filesystem::create_directory(new_path)) {
