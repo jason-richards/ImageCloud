@@ -1,6 +1,6 @@
 TARGET = kernel
 LIBS = $(shell pkg-config --libs yaml-cpp uuid libzmq libzen libmediainfo libexif openssl opencv4)
-LIBS += -L../libmiso -lmiso_x86_64-Linux
+LIBS += -L../libmiso -lmiso_$(shell uname -m)-$(shell uname -s)
 
 CXX = g++
 CXXFLAGS = --std=c++2a -Wall -O3 $(shell pkg-config --cflags opencv4)
