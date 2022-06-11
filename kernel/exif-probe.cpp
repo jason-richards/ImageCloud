@@ -58,7 +58,7 @@ public:
   ) {
     if (!ReadTag(m_ED, EXIF_IFD_0, EXIF_TAG_IMAGE_WIDTH, value) &&
         !ReadTag(m_ED, EXIF_IFD_1, EXIF_TAG_IMAGE_WIDTH, value) &&
-        !ReadTag(m_ED, EXIF_IFD_EXIF, EXIF_TAG_PIXEL_Y_DIMENSION, value))
+        !ReadTag(m_ED, EXIF_IFD_EXIF, EXIF_TAG_PIXEL_X_DIMENSION, value))
     {
       return false;
     }
@@ -73,7 +73,7 @@ public:
   ) {
     if (!ReadTag(m_ED, EXIF_IFD_0, EXIF_TAG_IMAGE_LENGTH, value) &&
         !ReadTag(m_ED, EXIF_IFD_1, EXIF_TAG_IMAGE_LENGTH, value) &&
-        !ReadTag(m_ED, EXIF_IFD_EXIF, EXIF_TAG_PIXEL_X_DIMENSION, value))
+        !ReadTag(m_ED, EXIF_IFD_EXIF, EXIF_TAG_PIXEL_Y_DIMENSION, value))
     {
       return false;
     }
