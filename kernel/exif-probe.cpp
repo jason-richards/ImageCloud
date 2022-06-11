@@ -87,11 +87,13 @@ public:
     std::string& value
   ) {
     if (!ReadTag(m_ED, EXIF_IFD_0, EXIF_TAG_DATE_TIME, value) &&
-        !ReadTag(m_ED, EXIF_IFD_1, EXIF_TAG_DATE_TIME, value))
+        !ReadTag(m_ED, EXIF_IFD_1, EXIF_TAG_DATE_TIME, value) &&
+        !ReadTag(m_ED, EXIF_IFD_EXIF, EXIF_TAG_DATE_TIME_ORIGINAL, value) &&
+        !ReadTag(m_ED, EXIF_IFD_EXIF, EXIF_TAG_DATE_TIME_DIGITIZED, value) &&
+        !ReadTag(m_ED, EXIF_IFD_GPS, static_cast<ExifTag>(EXIF_TAG_GPS_TIME_STAMP), value))
     {
       return false;
     }
-
 
     return true;
   }
