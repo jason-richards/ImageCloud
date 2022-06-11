@@ -35,7 +35,9 @@ PrepDirectory(
   struct tm timeinfo;                                                                                                   
   std::stringstream ss;                                                                                                 
                                                                                                                         
-  if (!strptime(timestamp.c_str(), "%Y:%m:%d %H:%M:%S", &timeinfo)) {                                                   
+  if (!strptime(timestamp.c_str(), "%Y:%m:%d %H:%M:%S", &timeinfo) &&
+      !strptime(timestamp.c_str(), "%Y/%m/%d %H:%M:%S", &timeinfo))
+  {
     std::time_t t = std::time(0);                                                                                       
     ss << base_path << "/Photos/" << std::put_time(std::localtime(&t), "%Y-%m-%d");                                     
   } else {                                                                                                              
@@ -93,4 +95,3 @@ AddPhoto::Start() {
 
   return true;
 }
-
