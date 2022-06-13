@@ -71,4 +71,3 @@ GetThumbnail::Initialize(
   return responder(r.data(), r.size(), false);
 }
 
-
