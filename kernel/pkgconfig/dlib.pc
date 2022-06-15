@@ -1,4 +1,4 @@
-prefix=../
+prefix=/usr
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib/x86_64-linux-gnu
 includedir=${prefix}/include/dlib
