@@ -1,0 +1,11 @@
+prefix=..
+exec_prefix=${prefix}
+libdir=${exec_prefix}/libmiso
+includedir=${prefix}/libmiso
+
+Name: libmiso
+Description: ImageCloud intermediate format processing library
+Version:
+Requires:
+Cflags: -I${includedir}/
+Libs: -L${libdir} -lmiso
