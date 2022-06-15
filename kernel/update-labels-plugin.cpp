@@ -118,8 +118,8 @@ UpdateLabels::Start() {
         }
 
         Miso::MisoPtr MP = Miso::CreateContext(meta_path);
-        std::vector<Miso::FaceRectangleT> faces;
-        Miso::GetFaceRectangles(MP, faces);
+        std::vector<Miso::ObjectRectangleT> faces;
+        Miso::GetObjectRectangles(MP, "faces", faces);
 
         std::vector<std::string> labels;
         for (auto& face : faces) {

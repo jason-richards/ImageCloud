@@ -1,10 +1,14 @@
 TARGET = kernel
-LIBS = $(shell pkg-config --libs yaml-cpp uuid libzmq libzen libmediainfo libexif openssl opencv4)
-LIBS += -L../libmiso -lmiso_$(shell uname -m)-$(shell uname -s)
+
+# Add additional PC files
+PKG_CONFIG_PATH = $(shell pkg-config --variable pc_path pkg-config)
+PKG_CONFIG_LIBS = yaml-cpp uuid libzmq libzen libmediainfo libexif openssl opencv4 dlib miso
 
 CXX = g++
-CXXFLAGS = --std=c++2a -Wall -O3 $(shell pkg-config --cflags opencv4)
-CXXFLAGS += -I../libmiso
+LIB = $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH):./pkgconfig pkg-config --libs $(PKG_CONFIG_LIBS))
+INC = $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH):./pkgconfig pkg-config --cflags $(PKG_CONFIG_LIBS))
+
+CXXFLAGS = --std=c++2a -Wall -O3 $(INC)
 
 .PHONY: default debug all clean
 
@@ -23,7 +27,7 @@ HEADERS = $(wildcard *.hpp)
 .PRECIOUS: $(TARGET) $(OBJECTS)
 
 $(TARGET): $(OBJECTS)
-	$(CXX) $(OBJECTS) -Wall $(LIBS) -o $@
+	$(CXX) $(OBJECTS) -Wall $(LIB) -o $@
 
 clean:
 	-rm -f *.o

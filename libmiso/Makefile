@@ -1,6 +1,6 @@
 MAJOR_VERSION = 1
 MINOR_VERSION = 0
-NAME    := libmiso_$(shell uname -m)-$(shell uname -s)
+NAME    := libmiso
 SNAME   := $(NAME).a
 DNAME   := $(NAME).so
 SRC     := $(wildcard *.cpp)

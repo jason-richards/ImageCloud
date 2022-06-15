@@ -1,4 +1,4 @@
-#include "face-probe.hpp"
+#include "object-probe.hpp"
 
 #pragma GCC diagnostic push
 
@@ -14,26 +14,18 @@
 #pragma GCC diagnostic pop
 
 namespace Artifacts {
-namespace Face {
+namespace Objects {
 
 class Probe {
 public:
-  static std::unique_ptr<cv::FileStorage> m_FS;
-  std::vector<cv::Rect> m_Faces;
+  std::vector<cv::Rect> m_Objects;
 
 
   Probe(
     const std::string& cascadePath,
     const std::vector<uint8_t>& photo
   ) {
-    if (m_FS == nullptr) {
-      m_FS.reset(new cv::FileStorage(cascadePath, cv::FileStorage::READ));
-    }
-
-    cv::CascadeClassifier face_cascade;
-    if (!face_cascade.read(m_FS->getFirstTopLevelNode())) {
-      throw std::runtime_error("Error loading cascade.");
-    }
+    cv::CascadeClassifier face_cascade(cascadePath);
 
     cv::Mat decodedImage = cv::imdecode(photo, CV_LOAD_IMAGE_GRAYSCALE);
     if (decodedImage.data == nullptr) {
@@ -41,33 +33,31 @@ public:
     }
 
     cv::equalizeHist(decodedImage, decodedImage);
-    face_cascade.detectMultiScale(decodedImage, m_Faces, 1.3, 3);
+    face_cascade.detectMultiScale(decodedImage, m_Objects, 1.3, 3, cv::CASCADE_SCALE_IMAGE);
     decodedImage.release();
   }
 
 
   void 
-  GetFaceRectangles(
-    std::vector<Miso::FaceRectangleT>& faces
+  GetObjectRectangles(
+    std::vector<Miso::ObjectRectangleT>& faces
   ) {
-    std::for_each(m_Faces.begin(), m_Faces.end(),
+    std::for_each(m_Objects.begin(), m_Objects.end(),
       [&faces](cv::Rect face) {
-        faces.push_back(Miso::FaceRectangleT{.x=face.x, .y=face.y, .width=face.width, .height=face.height});
+        faces.push_back(Miso::ObjectRectangleT{.x=face.x, .y=face.y, .width=face.width, .height=face.height});
       }
     );
   }
 
 };
 
-std::unique_ptr<cv::FileStorage> Probe::m_FS = nullptr;
 
-
-/* Create a new Face probe.
+/* Create a new Object probe.
  *
- * @param std::string - Face cascade path.
+ * @param std::string - Object cascade path.
  * @param uint8_t * - Pointer to photo data.
  * @param size_t - Image size.
- * @result ProbePtr - Face probe pointer.
+ * @result ProbePtr - Object probe pointer.
  */
 ProbePtr
 CreateProbe(
@@ -80,18 +70,18 @@ CreateProbe(
 
 /* Obtain a vector of all the faces found in the photo.
  *
- * @param ProbePtr - Face probe pointer.
- * @param std::vector<FaceRectangleT> - Vector of face rectangles
+ * @param ProbePtr - Object probe pointer.
+ * @param std::vector<ObjectRectangleT> - Vector of face rectangles
  * @result bool - True if faces were found.
  */
 void
-GetFaceRectangles(
+GetObjectRectangles(
   ProbePtr FP,
-  std::vector<Miso::FaceRectangleT>& faces
+  std::vector<Miso::ObjectRectangleT>& faces
 ) {
-  FP->GetFaceRectangles(faces);
+  FP->GetObjectRectangles(faces);
 }
 
-} // namespace Face
+} // namespace Objects
 } // namespace Artifacts
 

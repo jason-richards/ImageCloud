@@ -14,12 +14,12 @@ namespace Miso {
  *  Y
  **************/
 typedef struct
-FaceRectangle {
+ObjectRectangle {
   int x;
   int y;
   int width;
   int height;
-} FaceRectangleT;
+} ObjectRectangleT;
 
 
 /*
@@ -70,8 +70,8 @@ void SetHeight          (MisoPtr context, int height);
 void GetHeight          (MisoPtr context, int& height);
 void SetLocation        (MisoPtr context, const std::string& location);
 void GetLocation        (MisoPtr context, std::string& location);
-void SetFaceRectangles  (MisoPtr context, const std::vector<FaceRectangleT>& faces);
-void GetFaceRectangles  (MisoPtr context, std::vector<FaceRectangleT>& faces);
+void SetObjectRectangles(MisoPtr context, const std::string& object, const std::vector<ObjectRectangleT>& rects);
+void GetObjectRectangles(MisoPtr context, const std::string& object, std::vector<ObjectRectangleT>& rects);
 void SetFaceLabels      (MisoPtr context, const std::vector<std::string>& labels);
 void GetFaceLabels      (MisoPtr context, std::vector<std::string>& labels);
 void Write              (MisoPtr context, std::ostream&);

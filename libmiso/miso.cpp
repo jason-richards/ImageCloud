@@ -1,5 +1,6 @@
 #include "miso.hpp"
 
+#define RAPIDJSON_HAS_STDSTRING 1
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/ostreamwrapper.h>
@@ -216,34 +217,37 @@ public:
 
 
   void
-  SetFaceRectangles(
-    const std::vector<FaceRectangleT>& faces
+  SetObjectRectangles(
+    const std::string& object,
+    const std::vector<ObjectRectangleT>& rectangles
   ) {
     rapidjson::Document::AllocatorType& allocator = m_Doc.GetAllocator();
     rapidjson::Value array(rapidjson::kArrayType);
-    for (auto face : faces) {
+    for (auto rect : rectangles) {
       rapidjson::Value v;
       v.SetObject();
-      v.AddMember("x", face.x, allocator);
-      v.AddMember("y", face.y, allocator);
-      v.AddMember("width", face.width, allocator);
-      v.AddMember("height", face.height, allocator);
+      v.AddMember("x", rect.x, allocator);
+      v.AddMember("y", rect.y, allocator);
+      v.AddMember("width", rect.width, allocator);
+      v.AddMember("height", rect.height, allocator);
       array.PushBack(v, allocator);
     }
 
-    m_Doc.AddMember("faces", array, allocator);
+    rapidjson::Value name(object.c_str(), allocator);
+    m_Doc.AddMember(name, array, allocator);
   }
 
 
   void
-  GetFaceRectangles(
-    std::vector<FaceRectangleT>& faces
+  GetObjectRectangles(
+    const std::string& object,
+    std::vector<ObjectRectangleT>& rectangles
   ) {
-    if (m_Doc.HasMember("faces") && m_Doc["faces"].IsArray()) {
-      const auto& f = m_Doc["faces"];
+    if (m_Doc.HasMember(object) && m_Doc[object].IsArray()) {
+      const auto& f = m_Doc[object];
       for (auto iter = f.Begin(); iter != f.End(); iter++) {
-        faces.push_back(
-          FaceRectangleT{
+        rectangles.push_back(
+          ObjectRectangleT{
             .x=(*iter)["x"].GetInt(),
             .y=(*iter)["y"].GetInt(),
             .width=(*iter)["width"].GetInt(),
@@ -446,20 +450,22 @@ GetLocation(
 
 
 void
-SetFaceRectangles(
+SetObjectRectangles(
   MisoPtr context,
-  const std::vector<FaceRectangleT>& faces
+  const std::string& object, 
+  const std::vector<ObjectRectangleT>& rectangles
 ) {
-  context->SetFaceRectangles(faces);
+  context->SetObjectRectangles(object, rectangles);
 }
 
 
 void
-GetFaceRectangles(
+GetObjectRectangles(
   MisoPtr context,
-  std::vector<FaceRectangleT>& faces
+  const std::string& object,
+  std::vector<ObjectRectangleT>& rectangles
 ) {
-  context->GetFaceRectangles(faces);
+  context->GetObjectRectangles(object, rectangles);
 }
 
 

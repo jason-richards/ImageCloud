@@ -7,7 +7,7 @@
 #include "media-probe.hpp"
 #include "exif-probe.hpp"
 #include "sha256-probe.hpp"
-#include "face-probe.hpp"
+#include "object-probe.hpp"
 #include "miso.hpp"
 #include "file-io.hpp"
 
@@ -55,6 +55,29 @@ PrepDirectory(
 }
 
 
+void
+ObjectSearch(
+  const YAML::Node& objects,
+  const auto& process_objects
+) {
+  if (!objects) {
+    return;
+  }
+
+  if (objects.IsSequence()) {
+    for (YAML::const_iterator it = objects.begin(); it != objects.end(); ++it) {
+      const YAML::Node& b = *it;
+      YAML::Node::const_iterator iter;
+      YAML::Node node;
+      for(auto iter = b.begin(); iter != b.end(); iter++ ) {
+        node[iter->first.as<std::string>()] = iter->second.as<std::string>();
+      }
+      process_objects(node);
+    }
+  }
+}
+
+
 bool
 AddPhoto::Start() {
   std::string signature, timestamp, compression, location;
@@ -71,10 +94,6 @@ AddPhoto::Start() {
   Artifacts::SHA256::ProbePtr SP = Artifacts::SHA256::CreateProbe(m_SideData.data(), m_SideData.size());
   Artifacts::SHA256::GetSignature128(SP, signature);
 
-  Artifacts::Face::ProbePtr FP = Artifacts::Face::CreateProbe(m_Config["face_cascade"].as<std::string>(), m_SideData);
-  std::vector<Miso::FaceRectangleT> faces;
-  GetFaceRectangles(FP, faces);
-
   Miso::MisoPtr MP = Miso::CreateContext();
   Miso::SetUUID(MP, uuid);
   Miso::SetSignature(MP, signature);
@@ -83,7 +102,16 @@ AddPhoto::Start() {
   Miso::SetLocation(MP, location);
   Miso::SetWidth(MP, width);
   Miso::SetHeight(MP, height);
-  Miso::SetFaceRectangles(MP, faces);
+
+  auto ProcessObjects =
+    [&](const YAML::Node& object) {
+      std::vector<Miso::ObjectRectangleT> rects;
+      Artifacts::Objects::ProbePtr FP = Artifacts::Objects::CreateProbe(object["cascade"].as<std::string>(), m_SideData);
+      GetObjectRectangles(FP, rects);
+      Miso::SetObjectRectangles(MP, object["name"].as<std::string>(), rects);
+    };
+
+  ObjectSearch(m_Config["objects"], ProcessObjects);
 
   auto path = PrepDirectory(m_Config["storage"].as<std::string>(), timestamp);
 
