@@ -5,7 +5,7 @@ includedir=${prefix}/include/dlib
 
 Name: dlib
 Description: Dlib is a modern C++ toolkit containing machine learning algorithms and tools for creating complex software in C++ to solve real world problems.
-Version: dlib
+Version:
 Requires:
 Cflags: -I${includedir}/dlib
 Libs: -L${libdir} -ldlib
