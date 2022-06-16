@@ -3,7 +3,7 @@ exec_prefix=${prefix}
 libdir=${exec_prefix}/lib/x86_64-linux-gnu
 includedir=${prefix}/include/dlib
 
-Name: uuid
+Name: dlib
 Description: Dlib is a modern C++ toolkit containing machine learning algorithms and tools for creating complex software in C++ to solve real world problems.
 Version: dlib
 Requires:
