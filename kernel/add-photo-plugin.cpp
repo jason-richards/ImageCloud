@@ -7,6 +7,7 @@
 #include "media-probe.hpp"
 #include "exif-probe.hpp"
 #include "sha256-probe.hpp"
+#include "dlib-probe.hpp"
 #include "object-probe.hpp"
 #include "miso.hpp"
 #include "file-io.hpp"
@@ -94,6 +95,12 @@ AddPhoto::Start() {
   Artifacts::SHA256::ProbePtr SP = Artifacts::SHA256::CreateProbe(m_SideData.data(), m_SideData.size());
   Artifacts::SHA256::GetSignature128(SP, signature);
 
+  auto path = PrepDirectory(m_Config["storage"].as<std::string>(), timestamp);
+  auto photo_path = std::string(path + "/" + signature);
+  auto photo = OutputFile::Create(photo_path);
+  photo->write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
+  photo.reset();
+
   Miso::MisoPtr MP = Miso::CreateContext();
   Miso::SetUUID(MP, uuid);
   Miso::SetSignature(MP, signature);
@@ -103,23 +110,21 @@ AddPhoto::Start() {
   Miso::SetWidth(MP, width);
   Miso::SetHeight(MP, height);
 
-  auto ProcessObjects =
-    [&](const YAML::Node& object) {
-      std::vector<Miso::ObjectRectangleT> rects;
-      Artifacts::Objects::ProbePtr FP = Artifacts::Objects::CreateProbe(object["cascade"].as<std::string>(), m_SideData);
-      GetObjectRectangles(FP, rects);
-      Miso::SetObjectRectangles(MP, object["name"].as<std::string>(), rects);
-    };
+  //auto ProcessObjects =
+  //  [&](const YAML::Node& object) {
+  //    std::vector<Miso::ObjectRectangleT> rects;
+  //    Artifacts::Objects::ProbePtr FP = Artifacts::Objects::CreateProbe(object["cascade"].as<std::string>(), m_SideData);
+  //    GetObjectRectangles(FP, rects);
+  //    Miso::SetObjectRectangles(MP, object["name"].as<std::string>(), rects);
+  //  };
 
-  ObjectSearch(m_Config["objects"], ProcessObjects);
+  std::vector<Miso::ObjectRectangleT> rects;
+  Artifacts::Dlib::ProbePtr FP = Artifacts::Dlib::CreateProbe(photo_path);
+  GetObjectRectangles(FP, rects);
+  Miso::SetObjectRectangles(MP, "faces", rects);
 
-  auto path = PrepDirectory(m_Config["storage"].as<std::string>(), timestamp);
-
-  auto manifest = OutputFile::Create(std::string(path + "/" + uuid + ".json"));
+  auto manifest = OutputFile::Create(std::string(path + "/" + signature + ".json"));
   Miso::Write(MP, manifest->Get());
-
-  auto photo = OutputFile::Create(std::string(path + "/" + uuid));
-  photo->write(reinterpret_cast<const char *>(m_SideData.data()), m_SideData.size());
 
   return true;
 }

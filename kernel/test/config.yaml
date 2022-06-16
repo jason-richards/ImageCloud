@@ -1,5 +1,5 @@
 debug:
-threads: 32                             # Threads to use for handling incoming requests
+threads: 47                             # Threads to use for handling incoming requests
 timeout: 1000                           # Number of milliseconds to wait on a blocked incoming socket
 socket: "tcp://*:5555"                  # ZMQ Response socket address
 storage: /media/jrichard/video2/Photos  # Origin storage location (Where photos/video/audio files will be stored)
