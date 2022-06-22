@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <openssl/sha.h>
+#include <openssl/evp.h>
 
 namespace Artifacts {
 namespace SHA256 {
@@ -16,10 +17,8 @@ public:
     size_t size
   ) {
     m_Signature.resize(SHA256_DIGEST_LENGTH, 0);
-    SHA256_CTX sha256ctx;
-    SHA256_Init(&sha256ctx);
-    SHA256_Update(&sha256ctx, data, size);
-    SHA256_Final(m_Signature.data(), &sha256ctx);
+    EVP_Digest(data, size, m_Signature.data(), nullptr, EVP_sha256(), nullptr);
+
   }
 
 
